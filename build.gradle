@@ -9,6 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = '21'
+	targetCompatibility = '21'
 }
 
 repositories {
@@ -21,21 +22,27 @@ dependencies {
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 
-	compileOnly 'org.projectlombok:lombok:1.18.24'
+	compileOnly 'org.projectlombok:lombok:1.18.30'
 	runtimeOnly 'org.postgresql:postgresql'
 
-	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testCompileOnly 'org.projectlombok:lombok:1.18.24'
+	testCompileOnly 'org.projectlombok:lombok:1.18.30'
 
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+	options.release = 21
 }

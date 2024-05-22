@@ -10,7 +10,7 @@ CREATE TABLE tasks.employees (
 CREATE TABLE tasks.assignment (
     assignment_id UUID PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    employee_id UUID
+    employee_id UUID,
     CONSTRAINT fk_employee
             FOREIGN KEY(employee_id)
             REFERENCES tasks.employees(employee_id)
