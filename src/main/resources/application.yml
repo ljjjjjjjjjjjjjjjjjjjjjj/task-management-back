@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/postgres?currentSchema=tasks
+    username: postgres
+    password: pass
+    driver-class-name: org.postgresql.Driver
+
+flyway:
+  locations: classpath:db/migration
+  out-of-order: true
+
+mybatis:
+    type-handlers-package: com.devbridge.learning.Apptasks.configuration.mybatis
+    type-aliases-package: com.devbridge.learning.Apptasks.configuration.mybatis
+    configuration:
+      map-underscore-to-camel-case: true
