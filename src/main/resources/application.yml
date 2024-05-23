@@ -14,3 +14,7 @@ mybatis:
     type-aliases-package: com.devbridge.learning.Apptasks.configuration.mybatis
     configuration:
       map-underscore-to-camel-case: true
+
+jwt:
+  secret: 404E635266556A586E327235753B782F413F4428472B4B6250645367566B5970
+  expiration: 86400000
