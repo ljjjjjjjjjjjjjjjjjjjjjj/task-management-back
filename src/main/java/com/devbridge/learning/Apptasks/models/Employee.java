@@ -10,7 +10,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Employee {
     private UUID employeeId;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
     private String password;
 }

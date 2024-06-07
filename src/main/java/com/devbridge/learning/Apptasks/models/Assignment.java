@@ -11,6 +11,8 @@ import java.util.UUID;
 public class Assignment {
     private UUID assignmentId;
     private String title;
+    private String category;
+    private String description;
     private UUID employeeId;
 
 }
