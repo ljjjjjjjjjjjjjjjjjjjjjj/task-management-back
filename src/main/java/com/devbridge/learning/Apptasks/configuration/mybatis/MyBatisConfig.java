@@ -16,11 +16,6 @@ public class MyBatisConfig {
         SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
         factoryBean.setDataSource(dataSource);
 
-        // Remove the mapperLocations if not using XML mappers
-        // factoryBean.setMapperLocations(
-        //         new PathMatchingResourcePatternResolver().getResources("classpath:mappers/*.xml")
-        // );
-
         factoryBean.setTypeHandlers(new UUIDTypeHandler());
 
         return factoryBean.getObject();

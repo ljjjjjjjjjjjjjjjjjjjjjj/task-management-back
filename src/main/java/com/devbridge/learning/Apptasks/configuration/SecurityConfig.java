@@ -31,7 +31,9 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll()  // TODO temporary - to be removed
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/assignments/**").authenticated()
+                        .requestMatchers("/employees/**").authenticated()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

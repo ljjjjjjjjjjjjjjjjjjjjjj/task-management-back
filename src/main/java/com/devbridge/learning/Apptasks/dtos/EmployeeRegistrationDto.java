@@ -1,16 +1,13 @@
-package com.devbridge.learning.Apptasks.models;
+package com.devbridge.learning.Apptasks.dtos;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+
 import java.util.UUID;
 
 @Builder
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Employee {
+public class EmployeeRegistrationDto {
     private UUID employeeId;
     private String firstName;
     private String lastName;

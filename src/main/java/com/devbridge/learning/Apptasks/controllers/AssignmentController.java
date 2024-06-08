@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/assignments")
+@RequestMapping("/assignments")
 public class AssignmentController {
 
     @Autowired
