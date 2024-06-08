@@ -83,7 +83,7 @@ public class AuthService {
                 .password(hashedPassword)
                 .build();
 
-        employeeRepository.insert(employee);
+        employeeRepository.create(employee);
 
         return new RegisterResponseDTO(employee.getEmployeeId(), "User registered successfully");
     }

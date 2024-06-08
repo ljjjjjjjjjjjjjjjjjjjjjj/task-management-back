@@ -32,7 +32,7 @@ public interface EmployeeRepository {
     @Insert("INSERT INTO employees " +
             "(employee_id, first_name, last_name, email, password) " +
             "VALUES (#{employeeId}, #{firstName}, #{lastName}, #{email}, #{password})")
-    void insert(Employee employee);
+    void create(Employee employee);
 
     @Update("UPDATE employees SET first_name = #{firstName}, last_name = #{lastName}, email = #{email}, password = #{password} WHERE employee_id = #{employeeId}")
     void update(Employee employee);
