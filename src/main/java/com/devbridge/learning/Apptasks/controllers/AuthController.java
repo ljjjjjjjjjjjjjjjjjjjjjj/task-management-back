@@ -5,46 +5,20 @@ import com.devbridge.learning.Apptasks.dtos.PasswordChangeDto;
 import com.devbridge.learning.Apptasks.dtos.RegisterResponseDTO;
 import com.devbridge.learning.Apptasks.models.AuthRequest;
 import com.devbridge.learning.Apptasks.models.AuthResponse;
-import com.devbridge.learning.Apptasks.repositories.EmployeeRepository;
-import com.devbridge.learning.Apptasks.security.JwtUtil;
 import com.devbridge.learning.Apptasks.services.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    private final AuthService authService;
 
     @PostMapping("/login")
     public AuthResponse createAuthenticationToken(@RequestBody AuthRequest authRequest) throws Exception {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
-        );
-
-        final UserDetails userDetails = authService.loadUserByUsername(authRequest.getEmail());
-        final String jwt = jwtUtil.generateToken(userDetails);
-
-        return new AuthResponse(jwt);
+        return authService.login(authRequest);
     }
 
     @PostMapping("/signup")
