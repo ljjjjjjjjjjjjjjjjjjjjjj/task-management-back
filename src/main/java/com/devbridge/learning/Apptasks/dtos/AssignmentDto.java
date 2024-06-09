@@ -3,6 +3,7 @@ package com.devbridge.learning.Apptasks.dtos;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -10,7 +11,14 @@ import java.util.UUID;
 public class AssignmentDto {
     private UUID assignmentId;
     private String title;
-    private String category;
+    private UUID categoryId;
     private String description;
-    private UUID employeeId;
+    private UUID createdById;
+    private UUID assignedToId;
+    private String status;
+    private String priority;
+    private OffsetDateTime createdDate;
+    private OffsetDateTime assignedDate;
+    private OffsetDateTime unassignedDate;
+    private OffsetDateTime doneDate;
 }
