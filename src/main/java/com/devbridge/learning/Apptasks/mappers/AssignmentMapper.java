@@ -19,6 +19,7 @@ public class AssignmentMapper {
                 .categoryId(assignment.getCategory() != null ? assignment.getCategory().getCategoryId() : null)
                 .description(assignment.getDescription())
                 .createdById(assignment.getCreatedById())
+                .assignedToId(assignment.getAssignedToId())
                 .status(assignment.getStatus() != null ? assignment.getStatus().toString() : null)
                 .priority(assignment.getPriority() != null ? assignment.getPriority().toString() : null)
                 .priority(assignment.getPriority().toString())
