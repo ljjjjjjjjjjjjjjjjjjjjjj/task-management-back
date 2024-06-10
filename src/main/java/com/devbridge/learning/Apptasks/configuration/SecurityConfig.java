@@ -36,10 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/employees/**").permitAll() // TODO - change permitAll to authenticated access
                         .requestMatchers("/assignments/**").permitAll() // TODO - change permitAll to o authenticated access
                         .requestMatchers("/categories/**").permitAll() // TODO - change permitAll to o authenticated access
-                        .requestMatchers(HttpMethod.GET, "/roles/**").permitAll() // Allow all to get roles
-                        .requestMatchers(HttpMethod.POST, "/roles/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/roles/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/roles/**").hasRole("ADMIN")
+                        .requestMatchers("/roles/**").permitAll() // TODO - change permitAll to o authenticated access
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
@@ -51,6 +48,11 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
+
+    // .requestMatchers(HttpMethod.GET, "/roles/**").permitAll() // Allow all to get roles
+    // .requestMatchers(HttpMethod.POST, "/roles/**").hasRole("ADMIN")
+    // .requestMatchers(HttpMethod.PUT, "/roles/**").hasRole("ADMIN")
+    // .requestMatchers(HttpMethod.DELETE, "/roles/**").hasRole("ADMIN")
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

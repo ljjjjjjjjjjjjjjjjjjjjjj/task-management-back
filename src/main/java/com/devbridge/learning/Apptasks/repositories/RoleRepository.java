@@ -8,20 +8,31 @@ import java.util.List;
 import java.util.Optional;
 
 @Mapper
-@Repository
 public interface RoleRepository {
     @Insert("INSERT INTO roles "
             + "(role_id, role_name)"
             + " VALUES (#{roleId}, #{roleName})")
-    public void create(Role role);
+    void create(Role role);
 
     @Select("SELECT * FROM roles WHERE role_id = #{roleId}")
+    @Results({
+            @Result(property = "roleId", column = "role_id"),
+            @Result(property = "roleName", column = "role_name"),
+    })
     Optional<Role> findById(@Param("roleId") int roleId);
 
     @Select("SELECT * FROM roles WHERE role_name = #{roleName}")
+    @Results({
+            @Result(property = "roleId", column = "role_id"),
+            @Result(property = "roleName", column = "role_name"),
+    })
     Optional<Role> findByName(@Param("roleName") String roleName);
 
     @Select("SELECT * FROM roles")
+    @Results({
+            @Result(property = "roleId", column = "role_id"),
+            @Result(property = "roleName", column = "role_name"),
+    })
     List<Role> findAll();
 
     @Update("UPDATE roles SET role_name = #{roleName} WHERE role_id = #{roleId}")

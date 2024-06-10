@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -16,4 +18,5 @@ public class Employee {
     private String lastName;
     private String email;
     private String password;
+    private Set<Role> roles;
 }

@@ -1,9 +1,8 @@
 package com.devbridge.learning.Apptasks.controllers;
 
 import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
-import com.devbridge.learning.Apptasks.models.Employee;
 import com.devbridge.learning.Apptasks.services.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,10 +10,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/employees")
+@RequiredArgsConstructor
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
     @GetMapping
     public List<EmployeeDto> getAllEmployees() {
@@ -27,8 +26,18 @@ public class EmployeeController {
     }
 
     @PutMapping("/{employeeId}")
-    public void updateEmployee(@PathVariable UUID employeeId, @RequestBody EmployeeDto employeeDto) {
-        employeeService.updateEmployee(employeeId, employeeDto);
+    public EmployeeDto updateEmployee(@PathVariable UUID employeeId, @RequestBody EmployeeDto employeeDto) {
+        return employeeService.updateEmployee(employeeId, employeeDto);
+    }
+
+    @PutMapping("/role/add/{employeeId}")
+    public EmployeeDto addEmployeeRole(@PathVariable UUID employeeId, @RequestParam int roleId) {
+        return employeeService.addEmployeeRole(employeeId, roleId);
+    }
+
+    @PutMapping("/role/remove/{employeeId}")
+    public EmployeeDto removeEmployeeRole(@PathVariable UUID employeeId, @RequestParam int roleId) {
+        return employeeService.removeEmployeeRole(employeeId, roleId);
     }
 
     @DeleteMapping("/{employeeId}")

@@ -1,5 +1,6 @@
 package com.devbridge.learning.Apptasks.controllers;
 
+import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
 import com.devbridge.learning.Apptasks.dtos.EmployeeRegistrationDto;
 import com.devbridge.learning.Apptasks.dtos.PasswordChangeDto;
 import com.devbridge.learning.Apptasks.dtos.RegisterResponseDTO;
@@ -22,7 +23,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public RegisterResponseDTO registerUser(@RequestBody EmployeeRegistrationDto employeeRegistrationDto) {
+    public EmployeeDto registerUser(@RequestBody EmployeeRegistrationDto employeeRegistrationDto) {
         return authService.registerUser(employeeRegistrationDto);
     }
 

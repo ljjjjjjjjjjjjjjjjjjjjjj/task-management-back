@@ -1,10 +1,12 @@
 package com.devbridge.learning.Apptasks.repositories;
 
 import com.devbridge.learning.Apptasks.models.Employee;
+import com.devbridge.learning.Apptasks.models.Role;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Mapper
@@ -15,7 +17,8 @@ public interface EmployeeRepository {
             @Result(property = "firstName", column = "first_name"),
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "email", column = "email"),
-            @Result(property = "password", column = "password")
+            @Result(property = "password", column = "password"),
+            @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     List<Employee> findAll();
 
@@ -25,7 +28,8 @@ public interface EmployeeRepository {
             @Result(property = "firstName", column = "first_name"),
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "email", column = "email"),
-            @Result(property = "password", column = "password")
+            @Result(property = "password", column = "password"),
+            @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     Optional<Employee> findById(UUID employeeId);
 
@@ -46,7 +50,26 @@ public interface EmployeeRepository {
             @Result(property = "firstName", column = "first_name"),
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "email", column = "email"),
-            @Result(property = "password", column = "password")
+            @Result(property = "password", column = "password"),
+            @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     Optional<Employee> findByEmail(String email);
+
+    @Select("SELECT r.role_id, r.role_name FROM roles r " +
+            "INNER JOIN employee_roles er ON r.role_id = er.role_id " +
+            "WHERE er.employee_id = #{employeeId}")
+    @Results({
+            @Result(property = "roleId", column = "role_id"),
+            @Result(property = "roleName", column = "role_name")
+    })
+    Set<Role> getRolesByEmployeeId(UUID employeeId);
+
+    @Insert("INSERT INTO employee_roles (employee_id, role_id) VALUES (#{employeeId}, #{roleId})")
+    void addRole(@Param("employeeId") UUID employeeId, @Param("roleId") int roleId);
+
+    @Delete("DELETE FROM employee_roles WHERE employee_id = #{employeeId} AND role_id = #{roleId}")
+    void removeRole(@Param("employeeId") UUID employeeId, @Param("roleId") int roleId);
+
+    @Delete("DELETE FROM employee_roles WHERE employee_id = #{employeeId}")
+    void clearRoles(UUID employeeId);
 }

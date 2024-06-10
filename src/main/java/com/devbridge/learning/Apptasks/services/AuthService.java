@@ -1,19 +1,26 @@
 package com.devbridge.learning.Apptasks.services;
 
+import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
 import com.devbridge.learning.Apptasks.dtos.EmployeeRegistrationDto;
 import com.devbridge.learning.Apptasks.dtos.PasswordChangeDto;
 import com.devbridge.learning.Apptasks.dtos.RegisterResponseDTO;
 import com.devbridge.learning.Apptasks.exceptions.AuthenticationException;
+import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
 import com.devbridge.learning.Apptasks.exceptions.RegistrationError;
+import com.devbridge.learning.Apptasks.mappers.EmployeeMapper;
 import com.devbridge.learning.Apptasks.models.AuthRequest;
 import com.devbridge.learning.Apptasks.models.AuthResponse;
 import com.devbridge.learning.Apptasks.models.Employee;
+import com.devbridge.learning.Apptasks.models.Role;
 import com.devbridge.learning.Apptasks.repositories.EmployeeRepository;
+import com.devbridge.learning.Apptasks.repositories.RoleRepository;
 import com.devbridge.learning.Apptasks.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,15 +28,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final EmployeeRepository employeeRepository;
+    private final RoleRepository roleRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder;
+
+    public static final String DEFAULT_ROLE = "USER";
+    public static final String DEFAULT_ROLE_NOT_FOUND = "Default Role not found";
 
     private static final Pattern COMPANY_EMAIL_PATTERN = Pattern.compile(
             "^[A-Za-z0-9._%+-]+@company\\.(com|[a-z]{2})$"
@@ -48,7 +60,7 @@ public class AuthService {
         return new AuthResponse(jwt);
     }
 
-    public RegisterResponseDTO registerUser(EmployeeRegistrationDto employeeRegistrationDto) {
+    public EmployeeDto registerUser(EmployeeRegistrationDto employeeRegistrationDto) {
         Map<String, Object> validationErrors = new HashMap<>();
 
         if (!COMPANY_EMAIL_PATTERN.matcher(employeeRegistrationDto.getEmail()).matches()) {
@@ -83,9 +95,15 @@ public class AuthService {
                 .password(hashedPassword)
                 .build();
 
-        employeeRepository.create(employee);
+        Role defaultRole = roleRepository.findByName(DEFAULT_ROLE)
+                .orElseThrow(() -> new EntityNotFoundException(DEFAULT_ROLE_NOT_FOUND));
 
-        return new RegisterResponseDTO(employee.getEmployeeId(), "User registered successfully");
+        employee.setRoles(Set.of(defaultRole));
+
+        employeeRepository.create(employee);
+        employeeRepository.addRole(employee.getEmployeeId(), defaultRole.getRoleId());
+
+        return EmployeeMapper.toDto(employee);
     }
 
     public void changePassword(PasswordChangeDto passwordChangeDto, String email) {
@@ -110,8 +128,14 @@ public class AuthService {
         Optional<Employee> optionalEmployee = employeeRepository.findByEmail(email);
         Employee employee = optionalEmployee.orElseThrow(()
                 -> new UsernameNotFoundException("Employee not found with email: " + email));
+
+        Set<Role> roles = employee.getRoles();
+        List<GrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
+                .collect(Collectors.toList());
+
         return new org.springframework.security.core.userdetails.User
-                (employee.getEmail(), employee.getPassword(), Collections.emptyList());
+                (employee.getEmail(), employee.getPassword(), authorities);
     }
 
 }
