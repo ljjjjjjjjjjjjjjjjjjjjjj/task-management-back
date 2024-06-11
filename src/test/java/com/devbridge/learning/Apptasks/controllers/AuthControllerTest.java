@@ -1,8 +1,8 @@
 package com.devbridge.learning.Apptasks.controllers;
 
+import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
 import com.devbridge.learning.Apptasks.dtos.EmployeeRegistrationDto;
 import com.devbridge.learning.Apptasks.dtos.PasswordChangeDto;
-import com.devbridge.learning.Apptasks.dtos.RegisterResponseDTO;
 import com.devbridge.learning.Apptasks.models.AuthRequest;
 import com.devbridge.learning.Apptasks.models.AuthResponse;
 import com.devbridge.learning.Apptasks.services.AuthService;
@@ -64,14 +64,21 @@ public class AuthControllerTest {
                 .firstName("Test")
                 .lastName("User")
                 .build();
-        RegisterResponseDTO responseDTO = new RegisterResponseDTO(registrationDto.getEmployeeId(), "User registered successfully");
-        when(authService.registerUser(any(EmployeeRegistrationDto.class))).thenReturn(responseDTO);
+
+        EmployeeDto responseDto = EmployeeDto.builder()
+                .employeeId(registrationDto.getEmployeeId())
+                .email(registrationDto.getEmail())
+                .firstName(registrationDto.getFirstName())
+                .lastName(registrationDto.getLastName())
+                .build();
+
+        when(authService.registerUser(any(EmployeeRegistrationDto.class))).thenReturn(responseDto);
 
         mockMvc.perform(post("/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(registrationDto)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(new ObjectMapper().writeValueAsString(responseDTO)));
+                .andExpect(content().json(new ObjectMapper().writeValueAsString(responseDto)));
     }
 
     @Test

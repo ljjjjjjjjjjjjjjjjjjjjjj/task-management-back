@@ -1,6 +1,7 @@
 package com.devbridge.learning.Apptasks.controllers;
 
 import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
+import com.devbridge.learning.Apptasks.models.Role;
 import com.devbridge.learning.Apptasks.services.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -85,12 +87,63 @@ public class EmployeeControllerTest {
                 .email("john.doe@company.com")
                 .build();
 
-        doNothing().when(employeeService).updateEmployee(eq(employeeId), any(EmployeeDto.class));
+        EmployeeDto updatedEmployeeDto = EmployeeDto.builder()
+                .employeeId(employeeId)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@company.com")
+                .build();
+
+        when(employeeService.updateEmployee(eq(employeeId), any(EmployeeDto.class))).thenReturn(updatedEmployeeDto);
 
         mockMvc.perform(put("/employees/{employeeId}", employeeId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(employeeDto)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testAddEmployeeRole() throws Exception {
+        UUID employeeId = UUID.randomUUID();
+        Role defaultRole = new Role(1, "USER");
+
+        EmployeeDto employeeDto = EmployeeDto.builder()
+                .employeeId(employeeId)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@company.com")
+                .build();
+
+        when(employeeService.addEmployeeRole(eq(employeeId), eq(defaultRole.getRoleId()))).thenReturn(employeeDto);
+
+        mockMvc.perform(put("/employees/role/add/{employeeId}", employeeId)
+                        .param("roleId", String.valueOf(defaultRole.getRoleId()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(new ObjectMapper().writeValueAsString(employeeDto)));
+    }
+
+    @Test
+    public void testRemoveEmployeeRole() throws Exception {
+        UUID employeeId = UUID.randomUUID();
+        Role defaultRole = new Role(1, "USER");
+        Role adminRole = new Role(2, "ADMIN");
+
+        EmployeeDto employeeDto = EmployeeDto.builder()
+                .employeeId(employeeId)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@company.com")
+                .roles(Set.of(defaultRole, adminRole))
+                .build();
+
+        when(employeeService.removeEmployeeRole(eq(employeeId), eq(defaultRole.getRoleId()))).thenReturn(employeeDto);
+
+        mockMvc.perform(put("/employees/role/remove/{employeeId}", employeeId)
+                        .param("roleId", String.valueOf(defaultRole.getRoleId()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(new ObjectMapper().writeValueAsString(employeeDto)));
     }
 
     @Test

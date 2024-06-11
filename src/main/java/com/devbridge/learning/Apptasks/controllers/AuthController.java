@@ -3,7 +3,6 @@ package com.devbridge.learning.Apptasks.controllers;
 import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
 import com.devbridge.learning.Apptasks.dtos.EmployeeRegistrationDto;
 import com.devbridge.learning.Apptasks.dtos.PasswordChangeDto;
-import com.devbridge.learning.Apptasks.dtos.RegisterResponseDTO;
 import com.devbridge.learning.Apptasks.models.AuthRequest;
 import com.devbridge.learning.Apptasks.models.AuthResponse;
 import com.devbridge.learning.Apptasks.services.AuthService;

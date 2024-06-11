@@ -27,5 +27,3 @@ public class Assignment {
     private OffsetDateTime doneDate;
 
 }
-
-
