@@ -39,6 +39,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    public static final String USER_NOT_FOUND = "User by the given id not found";
     public static final String DEFAULT_ROLE = "USER";
     public static final String DEFAULT_ROLE_NOT_FOUND = "Default Role not found";
 
@@ -56,7 +57,11 @@ public class AuthService {
         final UserDetails userDetails = loadUserByUsername(authRequest.getEmail());
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return new AuthResponse(jwt);
+        Employee employee = employeeRepository.findByEmail(authRequest.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+        EmployeeDto user = EmployeeMapper.toDto(employee);
+
+        return new AuthResponse(jwt, user);
     }
 
     public EmployeeDto registerUser(EmployeeRegistrationDto employeeRegistrationDto) {
@@ -135,6 +140,12 @@ public class AuthService {
 
         return new org.springframework.security.core.userdetails.User
                 (employee.getEmail(), employee.getPassword(), authorities);
+    }
+
+    public EmployeeDto getCurrentUser(String email) {
+        Employee employee = employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+        return EmployeeMapper.toDto(employee);
     }
 
 }

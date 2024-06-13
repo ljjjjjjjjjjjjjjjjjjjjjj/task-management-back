@@ -6,6 +6,7 @@ import com.devbridge.learning.Apptasks.dtos.PasswordChangeDto;
 import com.devbridge.learning.Apptasks.models.AuthRequest;
 import com.devbridge.learning.Apptasks.models.AuthResponse;
 import com.devbridge.learning.Apptasks.services.AuthService;
+import org.springframework.security.core.Authentication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,5 +31,10 @@ public class AuthController {
     public String changePassword(@RequestBody PasswordChangeDto passwordChangeDto, @RequestParam String email) {
         authService.changePassword(passwordChangeDto, email);
         return "Password updated successfully";
+    }
+
+    @GetMapping("/current-user")
+    public EmployeeDto getCurrentUser(Authentication authentication) {
+        return authService.getCurrentUser(authentication.getName());
     }
 }
