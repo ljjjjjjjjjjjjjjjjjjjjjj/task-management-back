@@ -69,8 +69,9 @@ public class AuthServiceTest {
     @Test
     void testRegisterUser_Success() {
         EmployeeRegistrationDto registrationDto = EmployeeRegistrationDto.builder()
+                .employeeId(UUID.randomUUID())
                 .email("test@company.com")
-                .password("password")
+                .password("password1")
                 .firstName("John")
                 .lastName("Doe")
                 .build();
@@ -80,13 +81,13 @@ public class AuthServiceTest {
                 .email("test@company.com")
                 .firstName("John")
                 .lastName("Doe")
-                .password("hashed-password")
+                .password("password1")
                 .build();
 
         Role defaultRole = new Role(1, "USER");
 
         when(employeeRepository.findByEmail(registrationDto.getEmail())).thenReturn(Optional.empty());
-        when(passwordEncoder.encode(registrationDto.getPassword())).thenReturn("hashed-password");
+        when(passwordEncoder.encode(registrationDto.getPassword())).thenReturn("password1");
         when(roleRepository.findByName("USER")).thenReturn(Optional.of(defaultRole));
 
         EmployeeDto employeeDto = authService.registerUser(registrationDto);
@@ -100,7 +101,11 @@ public class AuthServiceTest {
     @Test
     void testRegisterUser_EmailExists() {
         EmployeeRegistrationDto registrationDto = EmployeeRegistrationDto.builder()
+                .employeeId(UUID.randomUUID())
                 .email("test@company.com")
+                .firstName("John")
+                .lastName("Doe")
+                .password("hashed-password")
                 .build();
 
         when(employeeRepository.findByEmail(registrationDto.getEmail())).thenReturn(Optional.of(new Employee()));

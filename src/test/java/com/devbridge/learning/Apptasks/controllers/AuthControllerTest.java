@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -45,7 +46,15 @@ public class AuthControllerTest {
         authRequest.setEmail("test@company.com");
         authRequest.setPassword("password1");
 
-        AuthResponse authResponse = new AuthResponse("jwt-token");
+        EmployeeDto employeeDto = EmployeeDto.builder()
+                .employeeId(UUID.randomUUID())
+                .email("test@company.com")
+                .firstName("Test")
+                .lastName("User")
+                .roles(Collections.emptySet())
+                .build();
+
+        AuthResponse authResponse = new AuthResponse("jwt-token", employeeDto);
         when(authService.login(any(AuthRequest.class))).thenReturn(authResponse);
 
         mockMvc.perform(post("/auth/login")

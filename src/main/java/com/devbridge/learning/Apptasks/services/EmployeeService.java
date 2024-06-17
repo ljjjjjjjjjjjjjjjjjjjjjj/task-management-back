@@ -101,6 +101,8 @@ public class EmployeeService {
         Employee existingEmployee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException(EMPLOYEE_NOT_FOUND));
 
+        employeeRepository.clearRoles(employeeId);
+
         employeeRepository.delete(existingEmployee.getEmployeeId());
     }
 }

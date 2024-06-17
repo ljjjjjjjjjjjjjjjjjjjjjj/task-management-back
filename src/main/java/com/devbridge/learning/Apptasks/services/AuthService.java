@@ -46,6 +46,17 @@ public class AuthService {
     private static final Pattern COMPANY_EMAIL_PATTERN = Pattern.compile(
             "^[A-Za-z0-9._%+-]+@company\\.(com|[a-z]{2})$"
     );
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile(
+            "^(?=.*[A-Za-z])(?=.*[0-9@#$%^&+=!]).{8,64}$"
+    );
+    // ^                     - start of the string
+    // (?= ... )             - a positive lookahead assertion (checks for the presence of something)
+    // .                     - dot . matches any character (except newline)
+    // *                     - asterisk * allows for zero or more occurrences of the preceding element
+    // .*                    - any character, any number of times
+    // [A-Za-z]        - at least one letter
+    // [0-9@#$%^&+=!]  - at least one number or special character
+    // {8,64}$                -  between 8 and 64 characters long
 
     public AuthResponse login(AuthRequest authRequest){
         authenticationManager.authenticate(
@@ -85,6 +96,9 @@ public class AuthService {
         if (StringUtils.length(employeeRegistrationDto.getEmail()) > 128) {
             validationErrors.put("email", RegistrationError.EMAIL_TOO_LONG);
         }
+        if (!PASSWORD_PATTERN.matcher(employeeRegistrationDto.getPassword()).matches()) {
+            validationErrors.put("password", RegistrationError.PASSWORD_REQUIREMENTS);
+        }
         if (!validationErrors.isEmpty()) {
             throw new AuthenticationException(validationErrors);
         }
@@ -123,6 +137,9 @@ public class AuthService {
             throw new AuthenticationException(Map.of("newPassword", "New password must be different from the old password"));
         }
 
+        if (!PASSWORD_PATTERN.matcher(passwordChangeDto.getNewPassword()).matches()) {
+            throw new AuthenticationException(Map.of("newPassword", RegistrationError.PASSWORD_REQUIREMENTS));
+        }
 
         employee.setPassword(passwordEncoder.encode(passwordChangeDto.getNewPassword()));
         employeeRepository.update(employee);
