@@ -1,6 +1,6 @@
 package com.devbridge.learning.Apptasks.repositories;
 
-import com.devbridge.learning.Apptasks.models.Assignment;
+import com.devbridge.learning.Apptasks.models.Task;
 import com.devbridge.learning.Apptasks.models.Priority;
 import com.devbridge.learning.Apptasks.models.Status;
 import org.apache.ibatis.annotations.*;
@@ -11,11 +11,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Mapper
-public interface AssignmentRepository {
-    @Select("SELECT a.*, c.category_id as categoryId, c.name as categoryName FROM assignments a " +
-            "LEFT JOIN categories c ON a.category_id = c.category_id")
+public interface TaskRepository {
+    @Select("SELECT t.*, c.category_id as categoryId, c.name as categoryName FROM tasks t " +
+            "LEFT JOIN categories c ON t.category_id = c.category_id")
     @Results({
-            @Result(property = "assignmentId", column = "assignment_id"),
+            @Result(property = "taskId", column = "task_id"),
             @Result(property = "title", column = "title"),
             @Result(property = "category.categoryId", column = "categoryId"),
             @Result(property = "category.name", column = "categoryName"),
@@ -29,13 +29,13 @@ public interface AssignmentRepository {
             @Result(property = "unassignedDate", column = "unassigned_date", javaType = OffsetDateTime.class),
             @Result(property = "doneDate", column = "done_date", javaType = OffsetDateTime.class)
     })
-    List<Assignment> findAll();
+    List<Task> findAll();
 
-    @Select("SELECT a.*, c.category_id as categoryId, c.name as categoryName FROM assignments a " +
-            "LEFT JOIN categories c ON a.category_id = c.category_id " +
-            "WHERE a.assignment_id = #{assignmentId}")
+    @Select("SELECT t.*, c.category_id as categoryId, c.name as categoryName FROM tasks t " +
+            "LEFT JOIN categories c ON t.category_id = c.category_id " +
+            "WHERE t.task_id = #{taskId}")
     @Results({
-            @Result(property = "assignmentId", column = "assignment_id"),
+            @Result(property = "taskId", column = "task_id"),
             @Result(property = "title", column = "title"),
             @Result(property = "category.categoryId", column = "categoryId"),
             @Result(property = "category.name", column = "categoryName"),
@@ -49,21 +49,21 @@ public interface AssignmentRepository {
             @Result(property = "unassignedDate", column = "unassigned_date", javaType = OffsetDateTime.class),
             @Result(property = "doneDate", column = "done_date", javaType = OffsetDateTime.class)
     })
-    Optional<Assignment> findById(UUID assignmentId);
+    Optional<Task> findById(UUID taskId);
 
-    @Insert("INSERT INTO assignments (assignment_id, title, category_id, description, created_by_id, " +
+    @Insert("INSERT INTO tasks (task_id, title, category_id, description, created_by_id, " +
             "assigned_to_id, status, priority, created_date, assigned_date, unassigned_date, done_date) " +
-            "VALUES (#{assignmentId}, #{title}, #{category.categoryId}, #{description}, #{createdById}, " +
+            "VALUES (#{taskId}, #{title}, #{category.categoryId}, #{description}, #{createdById}, " +
             "#{assignedToId}, #{status}, #{priority}, #{createdDate}, #{assignedDate}, #{unassignedDate}, #{doneDate})")
-    void create(Assignment assignment);
+    void create(Task task);
 
-    @Update("UPDATE assignments SET title = #{title}, category_id = #{category.categoryId}, " +
+    @Update("UPDATE tasks SET title = #{title}, category_id = #{category.categoryId}, " +
             "description = #{description}, created_by_id = #{createdById}, assigned_to_id = #{assignedToId}, " +
             "status = #{status}, priority = #{priority}, created_date = #{createdDate}, " +
             "assigned_date = #{assignedDate}, unassigned_date = #{unassignedDate}, done_date = #{doneDate} " +
-            "WHERE assignment_id = #{assignmentId}")
-    void update(Assignment assignment);
+            "WHERE task_id = #{taskId}")
+    void update(Task task);
 
-    @Delete("DELETE FROM assignments WHERE assignment_id = #{assignmentId}")
-    void delete(UUID assignmentId);
+    @Delete("DELETE FROM tasks WHERE task_id = #{taskId}")
+    void delete(UUID taskId);
 }

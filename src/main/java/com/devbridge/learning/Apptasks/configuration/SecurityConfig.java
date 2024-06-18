@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/employees/**").permitAll() // TODO - change permitAll to authenticated access
-                        .requestMatchers("/assignments/**").permitAll() // TODO - change permitAll to o authenticated access
+                        .requestMatchers("/tasks/**").permitAll() // TODO - change permitAll to o authenticated access
                         .requestMatchers("/categories/**").permitAll() // TODO - change permitAll to o authenticated access
                         .requestMatchers("/roles/**").permitAll() // TODO - change permitAll to o authenticated access
                         .anyRequest().authenticated()
