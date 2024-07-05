@@ -1,9 +1,9 @@
 package com.devbridge.learning.Apptasks.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.util.Set;
 import java.util.UUID;
@@ -12,12 +12,8 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employee {
-    private UUID employeeId;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
-    private Set<Role> roles;
+public class Team {
     private UUID teamId;
+    private String teamName;
+    private UUID teamLeaderId;
 }

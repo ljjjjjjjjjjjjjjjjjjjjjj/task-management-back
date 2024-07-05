@@ -21,6 +21,7 @@ public class Task {
     private UUID assignedToId;
     private Status status;
     private Priority priority;
+    private UUID projectId;
     private OffsetDateTime createdDate;
     private OffsetDateTime assignedDate;
     private OffsetDateTime unassignedDate;

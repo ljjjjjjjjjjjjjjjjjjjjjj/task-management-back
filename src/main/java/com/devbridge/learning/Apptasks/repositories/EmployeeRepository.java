@@ -1,5 +1,6 @@
 package com.devbridge.learning.Apptasks.repositories;
 
+import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
 import com.devbridge.learning.Apptasks.models.Employee;
 import com.devbridge.learning.Apptasks.models.Role;
 import org.apache.ibatis.annotations.*;
@@ -18,6 +19,7 @@ public interface EmployeeRepository {
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "email", column = "email"),
             @Result(property = "password", column = "password"),
+            @Result(property = "teamId", column = "team_id"),
             @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     List<Employee> findAll();
@@ -29,16 +31,31 @@ public interface EmployeeRepository {
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "email", column = "email"),
             @Result(property = "password", column = "password"),
+            @Result(property = "teamId", column = "team_id"),
             @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     Optional<Employee> findById(UUID employeeId);
 
+    @Select("SELECT e.employee_id, e.first_name, e.last_name, e.email, e.team_id " +
+            "FROM employees e JOIN team_members tm ON e.employee_id = tm.employee_id " +
+            "WHERE tm.team_id = #{teamId}")
+    @Results({
+            @Result(property = "employeeId", column = "employee_id"),
+            @Result(property = "firstName", column = "first_name"),
+            @Result(property = "lastName", column = "last_name"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "teamId", column = "team_id"),
+            @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
+    })
+    List<EmployeeDto> findEmployeeDtosByTeamId(UUID teamId);
+
+
     @Insert("INSERT INTO employees " +
-            "(employee_id, first_name, last_name, email, password) " +
-            "VALUES (#{employeeId}, #{firstName}, #{lastName}, #{email}, #{password})")
+            "(employee_id, first_name, last_name, email, password, team_id) " +
+            "VALUES (#{employeeId}, #{firstName}, #{lastName}, #{email}, #{password}, #{teamId})")
     void create(Employee employee);
 
-    @Update("UPDATE employees SET first_name = #{firstName}, last_name = #{lastName}, email = #{email}, password = #{password} WHERE employee_id = #{employeeId}")
+    @Update("UPDATE employees SET first_name = #{firstName}, last_name = #{lastName}, email = #{email}, password = #{password}, team_id = #{teamId} WHERE employee_id = #{employeeId}")
     void update(Employee employee);
 
     @Delete("DELETE FROM employees WHERE employee_id = #{employeeId}")
@@ -51,6 +68,7 @@ public interface EmployeeRepository {
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "email", column = "email"),
             @Result(property = "password", column = "password"),
+            @Result(property = "teamId", column = "team_id"),
             @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     Optional<Employee> findByEmail(String email);

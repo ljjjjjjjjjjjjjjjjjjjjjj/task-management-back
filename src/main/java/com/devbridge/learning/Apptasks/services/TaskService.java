@@ -7,6 +7,7 @@ import com.devbridge.learning.Apptasks.models.Task;
 import com.devbridge.learning.Apptasks.models.Category;
 import com.devbridge.learning.Apptasks.models.Priority;
 import com.devbridge.learning.Apptasks.models.Status;
+import com.devbridge.learning.Apptasks.repositories.ProjectRepository;
 import com.devbridge.learning.Apptasks.repositories.TaskRepository;
 import com.devbridge.learning.Apptasks.repositories.CategoryRepository;
 import com.devbridge.learning.Apptasks.repositories.EmployeeRepository;
@@ -26,9 +27,11 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final CategoryRepository categoryRepository;
     private final EmployeeRepository employeeRepository;
+    private final ProjectRepository projectRepository;
     private final static String TASK_NOT_FOUND = "Task with given id not found";
     private static final String CATEGORY_NOT_FOUND = "Category with given id not found";
     private static final String EMPLOYEE_NOT_FOUND = "Employee with given id not found";
+    private static final String PROJECT_NOT_FOUND = "Project with given id not found";
 
     public List<TaskDto> getAllTasks() {
         return taskRepository.findAll().stream()
@@ -37,8 +40,15 @@ public class TaskService {
     }
 
     public TaskDto getTaskById(UUID taskId) {
-        return TaskMapper.toDto(taskRepository.findById(taskId)
+        return TaskMapper.toDto(taskRepository.findByTaskId(taskId)
                 .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND)));
+    }
+
+    public List<TaskDto> getTasksByProjectId(UUID projectId) {
+        validateProjectId(projectId);
+        return taskRepository.findTasksByProjectId(projectId).stream()
+                .map(TaskMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public TaskDto createTask(TaskDto taskDto) {
@@ -71,7 +81,7 @@ public class TaskService {
     }
 
     public TaskDto updateTask(UUID taskId, TaskDto taskDto) {
-        Task existingTask = taskRepository.findById(taskId)
+        Task existingTask = taskRepository.findByTaskId(taskId)
                 .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND));
 
         if (taskDto.getAssignedToId() != null) {
@@ -99,7 +109,20 @@ public class TaskService {
         existingTask.setTitle(taskDto.getTitle());
         existingTask.setDescription(taskDto.getDescription());
         existingTask.setAssignedToId(taskDto.getAssignedToId());
+        existingTask.setProjectId(taskDto.getProjectId());
 
+        taskRepository.update(existingTask);
+
+        return TaskMapper.toDto(existingTask);
+    }
+
+    public TaskDto addTaskToProject(UUID projectId, UUID taskId) {
+        validateProjectId(projectId);
+
+        Task existingTask = taskRepository.findByTaskId(taskId)
+                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND));
+
+        existingTask.setProjectId(projectId);
         taskRepository.update(existingTask);
 
         return TaskMapper.toDto(existingTask);
@@ -149,6 +172,12 @@ public class TaskService {
     private void validateEmployeeId(UUID employeeId) {
         if (employeeRepository.findById(employeeId).isEmpty()) {
             throw new EntityNotFoundException(EMPLOYEE_NOT_FOUND);
+        }
+    }
+
+    private void validateProjectId(UUID projectId) {
+        if (projectRepository.findById(projectId).isEmpty()) {
+            throw new EntityNotFoundException(PROJECT_NOT_FOUND);
         }
     }
 }

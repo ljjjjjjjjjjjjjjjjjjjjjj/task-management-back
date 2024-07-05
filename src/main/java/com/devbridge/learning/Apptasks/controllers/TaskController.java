@@ -25,6 +25,11 @@ public class TaskController {
         return taskService.getTaskById(taskId);
     }
 
+    @GetMapping("/project/{projectId}")
+    public List<TaskDto> getTaskByProjectId(@PathVariable UUID projectId) {
+        return taskService.getTasksByProjectId(projectId);
+    }
+
     @PostMapping
     public TaskDto createTask(@RequestBody TaskDto taskDto) {
         return taskService.createTask(taskDto);

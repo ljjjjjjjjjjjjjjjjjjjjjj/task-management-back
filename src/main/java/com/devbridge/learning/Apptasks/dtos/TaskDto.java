@@ -17,6 +17,7 @@ public class TaskDto {
     private UUID assignedToId;
     private String status;
     private String priority;
+    private UUID projectId;
     private OffsetDateTime createdDate;
     private OffsetDateTime assignedDate;
     private OffsetDateTime unassignedDate;

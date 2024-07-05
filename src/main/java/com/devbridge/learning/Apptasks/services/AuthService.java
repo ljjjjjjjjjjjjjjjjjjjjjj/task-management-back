@@ -17,6 +17,7 @@ import com.devbridge.learning.Apptasks.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,6 +43,7 @@ public class AuthService {
     public static final String USER_NOT_FOUND = "User by the given id not found";
     public static final String DEFAULT_ROLE = "USER";
     public static final String DEFAULT_ROLE_NOT_FOUND = "Default Role not found";
+    public static final String INVALID_CREDENTIALS = "Invalid username or password.";
 
     private static final Pattern COMPANY_EMAIL_PATTERN = Pattern.compile(
             "^[A-Za-z0-9._%+-]+@company\\.(com|[a-z]{2})$"
@@ -59,11 +61,15 @@ public class AuthService {
     // {8,64}$                -  between 8 and 64 characters long
 
     public AuthResponse login(AuthRequest authRequest){
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authRequest.getEmail(),
-                        authRequest.getPassword())
-        );
+        Map<String, Object> validationErrors = new HashMap<>();
+
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    authRequest.getEmail(), authRequest.getPassword()));
+        } catch (BadCredentialsException e) {
+            validationErrors.put("error", INVALID_CREDENTIALS);
+            throw new AuthenticationException(validationErrors);
+        }
 
         final UserDetails userDetails = loadUserByUsername(authRequest.getEmail());
         final String jwt = jwtUtil.generateToken(userDetails);

@@ -33,9 +33,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/**").permitAll() // TODO - change permitAll to authenticated access
                         .requestMatchers("/employees/**").permitAll() // TODO - change permitAll to authenticated access
                         .requestMatchers("/tasks/**").permitAll() // TODO - change permitAll to o authenticated access
                         .requestMatchers("/categories/**").permitAll() // TODO - change permitAll to o authenticated access
+                        .requestMatchers("/teams/**").permitAll() // TODO - change permitAll to o authenticated access
+                        .requestMatchers("/projects/**").permitAll() // TODO - change permitAll to o authenticated access
                         .requestMatchers("/roles/**").permitAll() // TODO - change permitAll to o authenticated access
                         .anyRequest().authenticated()
                 )

@@ -6,6 +6,8 @@ import com.devbridge.learning.Apptasks.dtos.PasswordChangeDto;
 import com.devbridge.learning.Apptasks.models.AuthRequest;
 import com.devbridge.learning.Apptasks.models.AuthResponse;
 import com.devbridge.learning.Apptasks.services.AuthService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +36,10 @@ public class AuthController {
     }
 
     @GetMapping("/current-user")
-    public EmployeeDto getCurrentUser(Authentication authentication) {
-        return authService.getCurrentUser(authentication.getName());
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        if (authentication == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return ResponseEntity.ok(authService.getCurrentUser(authentication.getName()));
     }
 }
