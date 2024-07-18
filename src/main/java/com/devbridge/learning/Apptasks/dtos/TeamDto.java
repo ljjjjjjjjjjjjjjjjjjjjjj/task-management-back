@@ -17,4 +17,3 @@ public class TeamDto {
     @Builder.Default
     private Set<EmployeeDto> teamMembers = new HashSet<>();
 }
-

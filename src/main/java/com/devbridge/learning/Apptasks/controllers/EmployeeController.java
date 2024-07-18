@@ -20,6 +20,11 @@ public class EmployeeController {
         return employeeService.getAllEmployees();
     }
 
+    @GetMapping("/team/{teamId}")
+    public List<EmployeeDto> getEmployeesByTeamId(@PathVariable UUID teamId) {
+        return employeeService.getEmployeesByTeamId(teamId);
+    }
+
     @GetMapping("/{employeeId}")
     public EmployeeDto getEmployeeById(@PathVariable UUID employeeId) {
         return employeeService.getEmployeeById(employeeId);
@@ -39,6 +44,17 @@ public class EmployeeController {
     public EmployeeDto removeEmployeeRole(@PathVariable UUID employeeId, @RequestParam int roleId) {
         return employeeService.removeEmployeeRole(employeeId, roleId);
     }
+
+    @PutMapping("/team/add/{employeeId}")
+    public EmployeeDto addToTeam(@PathVariable UUID employeeId, @RequestParam UUID teamId) {
+        return employeeService.addToTeam(employeeId, teamId);
+    }
+
+    @PutMapping("/team/remove/{employeeId}")
+    public EmployeeDto removeFromTeam(@PathVariable UUID employeeId, @RequestParam UUID teamId) {
+        return employeeService.removeFromTeam(employeeId, teamId);
+    }
+
 
     @DeleteMapping("/{employeeId}")
     public void deleteEmployee(@PathVariable UUID employeeId) {

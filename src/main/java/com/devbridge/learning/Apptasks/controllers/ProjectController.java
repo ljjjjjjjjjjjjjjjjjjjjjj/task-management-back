@@ -25,6 +25,11 @@ public class ProjectController {
         return projectService.getAllProjects();
     }
 
+    @GetMapping("/employee/{employeeId}")
+    public List<Project> getProjectsByEmployeeId(@PathVariable UUID employeeId) {
+        return projectService.getProjectsByEmployeeId(employeeId);
+    }
+
     @GetMapping("/{projectId}")
     public Project getProjectById(@PathVariable UUID projectId) {
         return projectService.getProjectById(projectId);
@@ -38,11 +43,6 @@ public class ProjectController {
     @PutMapping("/{projectId}")
     public Project updateProject(@PathVariable UUID projectId, @RequestBody Project project) {
         return projectService.updateProject(projectId, project);
-    }
-
-    @PostMapping("/{projectId}/tasks")
-    public TaskDto addTaskToProject(@PathVariable UUID projectId, @RequestParam UUID taskId) {
-        return taskService.addTaskToProject(projectId, taskId);
     }
 
     @DeleteMapping("/{projectId}")

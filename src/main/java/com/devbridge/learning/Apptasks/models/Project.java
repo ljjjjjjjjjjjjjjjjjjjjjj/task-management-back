@@ -16,6 +16,7 @@ public class Project {
     private UUID projectId;
     private String projectName;
     private UUID teamId;
+    private UUID createdById;
     private OffsetDateTime createdDate;
     private OffsetDateTime startDate;
     private OffsetDateTime initialDeadlineDate;

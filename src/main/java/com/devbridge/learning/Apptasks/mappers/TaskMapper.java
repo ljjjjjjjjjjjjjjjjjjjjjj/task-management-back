@@ -1,5 +1,6 @@
 package com.devbridge.learning.Apptasks.mappers;
 
+import com.devbridge.learning.Apptasks.dtos.TaskDetailedDto;
 import com.devbridge.learning.Apptasks.dtos.TaskDto;
 import com.devbridge.learning.Apptasks.exceptions.InvalidEnumValueException;
 import com.devbridge.learning.Apptasks.models.Task;
@@ -23,6 +24,33 @@ public class TaskMapper {
                 .status(task.getStatus() != null ? task.getStatus().toString() : null)
                 .priority(task.getPriority() != null ? task.getPriority().toString() : null)
                 .projectId(task.getProjectId())
+                .createdDate(task.getCreatedDate())
+                .assignedDate(task.getAssignedDate())
+                .unassignedDate(task.getUnassignedDate())
+                .doneDate(task.getDoneDate())
+                .build();
+    }
+
+    public static TaskDetailedDto toDetailedDto(Task task, String createdByFirstName, String createdByLastName, String assignedToFirstName, String assignedToLastName, String projectName) {
+        if (task == null) {
+            return null;
+        }
+
+        return TaskDetailedDto.builder()
+                .taskId(task.getTaskId())
+                .title(task.getTitle())
+                .categoryId(task.getCategory() != null ? task.getCategory().getCategoryId() : null)
+                .description(task.getDescription())
+                .createdById(task.getCreatedById())
+                .createdByFirstName(createdByFirstName)
+                .createdByLastName(createdByLastName)
+                .assignedToId(task.getAssignedToId())
+                .assignedToFirstName(assignedToFirstName)
+                .assignedToLastName(assignedToLastName)
+                .status(task.getStatus() != null ? task.getStatus().toString() : null)
+                .priority(task.getPriority() != null ? task.getPriority().toString() : null)
+                .projectId(task.getProjectId())
+                .projectName(projectName)
                 .createdDate(task.getCreatedDate())
                 .assignedDate(task.getAssignedDate())
                 .unassignedDate(task.getUnassignedDate())

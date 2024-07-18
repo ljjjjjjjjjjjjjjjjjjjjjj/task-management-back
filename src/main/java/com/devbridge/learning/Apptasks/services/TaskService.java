@@ -1,12 +1,10 @@
 package com.devbridge.learning.Apptasks.services;
 
+import com.devbridge.learning.Apptasks.dtos.TaskDetailedDto;
 import com.devbridge.learning.Apptasks.dtos.TaskDto;
 import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
 import com.devbridge.learning.Apptasks.mappers.TaskMapper;
-import com.devbridge.learning.Apptasks.models.Task;
-import com.devbridge.learning.Apptasks.models.Category;
-import com.devbridge.learning.Apptasks.models.Priority;
-import com.devbridge.learning.Apptasks.models.Status;
+import com.devbridge.learning.Apptasks.models.*;
 import com.devbridge.learning.Apptasks.repositories.ProjectRepository;
 import com.devbridge.learning.Apptasks.repositories.TaskRepository;
 import com.devbridge.learning.Apptasks.repositories.CategoryRepository;
@@ -40,8 +38,13 @@ public class TaskService {
     }
 
     public TaskDto getTaskById(UUID taskId) {
-        return TaskMapper.toDto(taskRepository.findByTaskId(taskId)
-                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND)));
+        Task existingTask = validateTaskId(taskId);
+        return TaskMapper.toDto(existingTask);
+    }
+
+    public TaskDetailedDto getTaskDetailedById(UUID taskId) {
+        Task existingTask = validateTaskId(taskId);
+        return toDetailedDto(existingTask);
     }
 
     public List<TaskDto> getTasksByProjectId(UUID projectId) {
@@ -51,24 +54,35 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    public List<TaskDetailedDto> getTasksDetailedByProjectId(UUID projectId) {
+        validateProjectId(projectId);
+        return taskRepository.findTasksByProjectId(projectId).stream()
+                .map(this::toDetailedDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskDto> getTasksByEmployeeId(UUID employeeId) {
+        validateEmployeeId(employeeId);
+        return taskRepository.findTasksByEmployeeId(employeeId).stream()
+                .map(TaskMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskDetailedDto> getTasksDetailedByEmployeeId(UUID employeeId) {
+        validateEmployeeId(employeeId);
+        return taskRepository.findTasksByEmployeeId(employeeId).stream()
+                .map(this::toDetailedDto)
+                .collect(Collectors.toList());
+    }
+
     public TaskDto createTask(TaskDto taskDto) {
-        Category category = null;
-        if (taskDto.getCategoryId() != null) {
-            category = categoryRepository.findById(taskDto.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException(CATEGORY_NOT_FOUND));
-        }
+        Category category = getCategory(taskDto.getCategoryId());
 
         validateEmployeeId(taskDto.getCreatedById());
         if (taskDto.getAssignedToId() != null) {
             validateEmployeeId(taskDto.getAssignedToId());
         }
-
-        if (taskDto.getStatus() == null) {
-            taskDto.setStatus(Status.NOT_STARTED.toString());
-        }
-        if (taskDto.getPriority() == null) {
-            taskDto.setPriority(Priority.MEDIUM.toString());
-        }
+        initializeTaskDefaults(taskDto);
         taskDto.setTaskId(UUID.randomUUID());
         taskDto.setCreatedDate(OffsetDateTime.now(ZoneOffset.UTC));
 
@@ -76,55 +90,24 @@ public class TaskService {
         setTaskDatesOnCreate(task);
 
         taskRepository.create(task);
-
         return TaskMapper.toDto(task);
     }
 
     public TaskDto updateTask(UUID taskId, TaskDto taskDto) {
-        Task existingTask = taskRepository.findByTaskId(taskId)
-                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND));
-
-        if (taskDto.getAssignedToId() != null) {
-            validateEmployeeId(taskDto.getAssignedToId());
-        }
-
-        if (taskDto.getCategoryId() != null) {
-            Category category = categoryRepository.findById(taskDto.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException(CATEGORY_NOT_FOUND));
-            existingTask.setCategory(category);
-        } else {
-            existingTask.setCategory(null);
-        }
-
-        if (taskDto.getStatus() != null) {
-            existingTask.setStatus(TaskMapper.toStatus(taskDto.getStatus()));
-        }
-
-        if (taskDto.getPriority() != null) {
-            existingTask.setPriority(TaskMapper.toPriority(taskDto.getPriority()));
-        }
-
-        setTaskDatesOnUpdate(existingTask, taskDto);
-
-        existingTask.setTitle(taskDto.getTitle());
-        existingTask.setDescription(taskDto.getDescription());
-        existingTask.setAssignedToId(taskDto.getAssignedToId());
-        existingTask.setProjectId(taskDto.getProjectId());
-
+        Task existingTask = validateTaskId(taskId);
+        updateExistingTask(existingTask, taskDto);
         taskRepository.update(existingTask);
 
         return TaskMapper.toDto(existingTask);
     }
 
-    public TaskDto addTaskToProject(UUID projectId, UUID taskId) {
+    public TaskDto assignTaskToProject(UUID taskId, UUID projectId) {
         validateProjectId(projectId);
-
-        Task existingTask = taskRepository.findByTaskId(taskId)
-                .orElseThrow(() -> new EntityNotFoundException(TASK_NOT_FOUND));
+        Task existingTask = validateTaskId(taskId);
 
         existingTask.setProjectId(projectId);
-        taskRepository.update(existingTask);
 
+        taskRepository.updateProjectId(existingTask);
         return TaskMapper.toDto(existingTask);
     }
 
@@ -175,9 +158,80 @@ public class TaskService {
         }
     }
 
-    private void validateProjectId(UUID projectId) {
-        if (projectRepository.findById(projectId).isEmpty()) {
-            throw new EntityNotFoundException(PROJECT_NOT_FOUND);
+    private Project validateProjectId(UUID projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow( () -> new EntityNotFoundException(PROJECT_NOT_FOUND) );
+    }
+
+    private Task validateTaskId(UUID taskId) {
+        return taskRepository.findByTaskId(taskId)
+                .orElseThrow( () -> new EntityNotFoundException(TASK_NOT_FOUND) );
+    }
+
+    private void updateExistingTask(Task existingTask, TaskDto taskDto) {
+        if (taskDto.getAssignedToId() != null) {
+            validateEmployeeId(taskDto.getAssignedToId());
+        }
+
+        if (taskDto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(taskDto.getCategoryId())
+                    .orElseThrow(() -> new EntityNotFoundException(CATEGORY_NOT_FOUND));
+            existingTask.setCategory(category);
+        } else {
+            existingTask.setCategory(null);
+        }
+
+        if (taskDto.getStatus() != null) {
+            existingTask.setStatus(TaskMapper.toStatus(taskDto.getStatus()));
+        }
+
+        if (taskDto.getPriority() != null) {
+            existingTask.setPriority(TaskMapper.toPriority(taskDto.getPriority()));
+        }
+
+        setTaskDatesOnUpdate(existingTask, taskDto);
+
+        existingTask.setTitle(taskDto.getTitle());
+        existingTask.setDescription(taskDto.getDescription());
+        existingTask.setAssignedToId(taskDto.getAssignedToId());
+        existingTask.setProjectId(taskDto.getProjectId());
+    }
+
+    private TaskDetailedDto toDetailedDto(Task task) {
+        Employee createdByEmployee = employeeRepository.findById(task.getCreatedById())
+                .orElseThrow(() -> new EntityNotFoundException(EMPLOYEE_NOT_FOUND));
+
+        Employee assignedToEmployee = task.getAssignedToId() != null
+                ? employeeRepository.findById(task.getAssignedToId()).orElse(null)
+                : null;
+
+        Project project = task.getProjectId() != null
+                ? projectRepository.findById(task.getProjectId()).orElse(null)
+                : null;
+
+        return TaskMapper.toDetailedDto(
+                task,
+                createdByEmployee.getFirstName(),
+                createdByEmployee.getLastName(),
+                assignedToEmployee != null ? assignedToEmployee.getFirstName() : null,
+                assignedToEmployee != null ? assignedToEmployee.getLastName() : null,
+                project != null ? project.getProjectName() : null
+        );
+    }
+
+    private void initializeTaskDefaults(TaskDto taskDto) {
+        if (taskDto.getStatus() == null) {
+            taskDto.setStatus(Status.NOT_STARTED.toString());
+        }
+        if (taskDto.getPriority() == null) {
+            taskDto.setPriority(Priority.MEDIUM.toString());
         }
     }
+
+    private Category getCategory(UUID categoryId) {
+        if (categoryId == null) return null;
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException(CATEGORY_NOT_FOUND));
+    }
+
 }

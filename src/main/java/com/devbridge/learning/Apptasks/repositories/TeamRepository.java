@@ -16,6 +16,8 @@ public interface TeamRepository {
             @Result(property = "teamId", column = "team_id"),
             @Result(property = "teamName", column = "team_name"),
             @Result(property = "teamLeaderId", column = "team_leader_id"),
+            @Result(property = "teamMembers", column = "team_id", many = @Many(select =
+                    "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findByTeamId"))
     })
     List<Team> findAll();
 
@@ -24,43 +26,49 @@ public interface TeamRepository {
     @Results({
             @Result(property = "teamId", column = "team_id"),
             @Result(property = "teamName", column = "team_name"),
-            @Result(property = "teamLeaderId", column = "team_leader_id")
+            @Result(property = "teamLeaderId", column = "team_leader_id"),
+            @Result(property = "teamMembers", column = "team_id", many = @Many(select =
+                    "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findByTeamId"))
     })
     Optional<Team> findById(UUID teamId);
 
-    @Select("SELECT t.team_id, t.team_name, t.team_leader_id FROM teams t " +
-            "WHERE t.team_id = #{teamId}")
+    @Select("SELECT team_id, team_name, team_leader_id FROM teams " +
+            "WHERE team_leader_id = #{teamLeaderId}")
     @Results({
             @Result(property = "teamId", column = "team_id"),
             @Result(property = "teamName", column = "team_name"),
             @Result(property = "teamLeaderId", column = "team_leader_id"),
             @Result(property = "teamMembers", column = "team_id", many = @Many(select =
-                    "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findEmployeeDtosByTeamId"))
+                    "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findByTeamId"))
     })
-    Optional<TeamDto> findWithMembersById(UUID teamId);
-
-    @Select("SELECT t.team_id, t.team_name, t.team_leader_id FROM teams t " +
-            "WHERE t.team_id = #{teamId}")
-    @Results({
-            @Result(property = "teamId", column = "team_id"),
-            @Result(property = "teamName", column = "team_name"),
-            @Result(property = "teamLeaderId", column = "team_leader_id"),
-            @Result(property = "teamMembers", column = "team_id", many = @Many(select =
-                    "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findEmployeeDtosByTeamId"))
-    })
-    Optional<TeamDto> findWithMembersByLeaderId(UUID employeeId);
+    Optional<Team> findByLeaderId(UUID teamLeaderId);
 
     @Select("SELECT t.team_id, t.team_name, t.team_leader_id FROM teams t " +
             "JOIN team_members tm ON t.team_id = tm.team_id " +
-            "WHERE tm.employee_id = #{employeeId}")
+            "WHERE tm.employee_id = #{teamMemberId}")
     @Results({
             @Result(property = "teamId", column = "team_id"),
             @Result(property = "teamName", column = "team_name"),
             @Result(property = "teamLeaderId", column = "team_leader_id"),
             @Result(property = "teamMembers", column = "team_id", many = @Many(select =
-                    "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findEmployeeDtosByTeamId"))
+                    "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findByTeamId"))
     })
-    Optional<TeamDto> findWithMembersByMemberId(UUID employeeId);
+    Optional<Team> findByMemberId(UUID teamMemberId);
+
+    @Select("SELECT t.team_id, t.team_name, t.team_leader_id FROM teams t " +
+            "JOIN team_members tm ON t.team_id = tm.team_id " +
+            "WHERE t.team_leader_id = #{employeeId} OR tm.employee_id = #{employeeId}")
+    @Results({
+            @Result(property = "teamId", column = "team_id"),
+            @Result(property = "teamName", column = "team_name"),
+            @Result(property = "teamLeaderId", column = "team_leader_id"),
+            @Result(property = "teamMembers", column = "team_id", many = @Many(select =
+                    "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findByTeamId"))
+    })
+    Optional<Team> findByEmployeeId(UUID employeeId);
+
+    @Select("SELECT team_id FROM teams WHERE team_leader_id = #{teamLeaderId}")
+    List<UUID> findTeamIdsByLeaderId(UUID teamLeaderId);
 
     @Insert("INSERT INTO teams (team_id, team_name, team_leader_id) " +
             "VALUES (#{teamId}, #{teamName}, #{teamLeaderId})")
@@ -72,9 +80,6 @@ public interface TeamRepository {
 
     @Delete("DELETE FROM teams WHERE team_id = #{teamId}")
     void delete(UUID teamId);
-
-    @Select("SELECT employee_id FROM team_members WHERE team_id = #{teamId}")
-    List<UUID> getMembersIdsByTeamId(UUID teamId);
 
     @Insert("INSERT INTO team_members (team_id, employee_id) " +
             "VALUES (#{teamId}, #{employeeId})")

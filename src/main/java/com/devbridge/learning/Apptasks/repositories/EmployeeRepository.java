@@ -36,20 +36,6 @@ public interface EmployeeRepository {
     })
     Optional<Employee> findById(UUID employeeId);
 
-    @Select("SELECT e.employee_id, e.first_name, e.last_name, e.email, e.team_id " +
-            "FROM employees e JOIN team_members tm ON e.employee_id = tm.employee_id " +
-            "WHERE tm.team_id = #{teamId}")
-    @Results({
-            @Result(property = "employeeId", column = "employee_id"),
-            @Result(property = "firstName", column = "first_name"),
-            @Result(property = "lastName", column = "last_name"),
-            @Result(property = "email", column = "email"),
-            @Result(property = "teamId", column = "team_id"),
-            @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
-    })
-    List<EmployeeDto> findEmployeeDtosByTeamId(UUID teamId);
-
-
     @Insert("INSERT INTO employees " +
             "(employee_id, first_name, last_name, email, password, team_id) " +
             "VALUES (#{employeeId}, #{firstName}, #{lastName}, #{email}, #{password}, #{teamId})")
@@ -73,6 +59,18 @@ public interface EmployeeRepository {
     })
     Optional<Employee> findByEmail(String email);
 
+    @Select("SELECT * FROM employees WHERE team_id = #{teamId}")
+    @Results({
+            @Result(property = "employeeId", column = "employee_id"),
+            @Result(property = "firstName", column = "first_name"),
+            @Result(property = "lastName", column = "last_name"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "password", column = "password"),
+            @Result(property = "teamId", column = "team_id"),
+            @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
+    })
+    List<Employee> findByTeamId(UUID teamId);
+
     @Select("SELECT r.role_id, r.role_name FROM roles r " +
             "INNER JOIN employee_roles er ON r.role_id = er.role_id " +
             "WHERE er.employee_id = #{employeeId}")
@@ -82,12 +80,27 @@ public interface EmployeeRepository {
     })
     Set<Role> getRolesByEmployeeId(UUID employeeId);
 
-    @Insert("INSERT INTO employee_roles (employee_id, role_id) VALUES (#{employeeId}, #{roleId})")
+    @Insert("INSERT INTO employee_roles (employee_id, role_id) " +
+            "VALUES (#{employeeId}, #{roleId})")
     void addRole(@Param("employeeId") UUID employeeId, @Param("roleId") int roleId);
 
-    @Delete("DELETE FROM employee_roles WHERE employee_id = #{employeeId} AND role_id = #{roleId}")
+    @Delete("DELETE FROM employee_roles " +
+            "WHERE employee_id = #{employeeId} " +
+            "AND role_id = #{roleId}")
     void removeRole(@Param("employeeId") UUID employeeId, @Param("roleId") int roleId);
 
-    @Delete("DELETE FROM employee_roles WHERE employee_id = #{employeeId}")
+    @Delete("DELETE FROM employee_roles " +
+            "WHERE employee_id = #{employeeId}")
     void clearRoles(UUID employeeId);
+
+    @Update("UPDATE employees " +
+            "SET team_id = #{teamId} " +
+            "WHERE employee_id = #{employeeId}")
+    void assignToTeam(@Param("employeeId") UUID employeeId, @Param("teamId") UUID teamId);
+
+    @Update("UPDATE employees " +
+            "SET team_id = NULL " +
+            "WHERE employee_id = #{employeeId}")
+    void removeFromTeam(@Param("employeeId") UUID employeeId);
+
 }

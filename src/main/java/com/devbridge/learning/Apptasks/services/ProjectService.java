@@ -1,18 +1,19 @@
 package com.devbridge.learning.Apptasks.services;
 
 import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
+import com.devbridge.learning.Apptasks.models.Employee;
 import com.devbridge.learning.Apptasks.models.Project;
 import com.devbridge.learning.Apptasks.models.Status;
+import com.devbridge.learning.Apptasks.models.Team;
+import com.devbridge.learning.Apptasks.repositories.EmployeeRepository;
 import com.devbridge.learning.Apptasks.repositories.ProjectRepository;
-import com.devbridge.learning.Apptasks.repositories.TaskRepository;
 import com.devbridge.learning.Apptasks.repositories.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,13 +21,36 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final TeamRepository teamRepository;
-    private final TaskRepository taskRepository;
+    private final EmployeeRepository employeeRepository;
 
     private final static String PROJECT_NOT_FOUND = "Project with given id not found";
+    private final static String NO_PROJECTS = "Employee does not have any projects";
     private final static String TEAM_NOT_FOUND = "Team with given id not found";
-    private final static String TASK_NOT_FOUND = "Task with given id not found";
+    private final static String EMPLOYEE_NOT_FOUND = "Employee with given id not found";
+
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
+    }
+
+    public List<Project> getProjectsByEmployeeId(UUID employeeId) {
+        Employee employee = validateEmployee(employeeId);
+
+        Set<UUID> teamIds = new HashSet<>();
+
+        if (employee.getTeamId()!= null) {
+            validateTeamId(employee.getTeamId());
+            teamIds.add(employee.getTeamId());
+        }
+
+        teamIds.addAll(teamRepository.findTeamIdsByLeaderId(employeeId));
+
+        Set<Project> projects = new HashSet<>();
+        if (!teamIds.isEmpty()) {
+            projects.addAll(projectRepository.findByTeamIds(teamIds));
+        }
+        projects.addAll(projectRepository.findByCreatedById(employeeId));
+
+        return new ArrayList<>(projects);
     }
 
     public Project getProjectById(UUID projectId) {
@@ -35,6 +59,8 @@ public class ProjectService {
     }
 
     public Project createProject(Project project) {
+        validateEmployee(project.getCreatedById());
+
         if (project.getTeamId() != null) {
             validateTeamId(project.getTeamId());
         }
@@ -51,8 +77,10 @@ public class ProjectService {
     }
 
     public Project updateProject(UUID projectId, Project project) {
-        Project existingProject = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND));
+        Project existingProject = validateProjectId(projectId);
+        if (project.getTeamId() != null){
+            validateTeamId(project.getTeamId());
+        }
 
         existingProject.setProjectName(project.getProjectName());
         existingProject.setTeamId(project.getTeamId());
@@ -70,9 +98,19 @@ public class ProjectService {
         projectRepository.delete(projectId);
     }
 
-    private void validateTeamId(UUID teamId) {
-        if (teamRepository.findById(teamId).isEmpty()) {
-            throw new EntityNotFoundException(TEAM_NOT_FOUND);
-        }
+    private Employee validateEmployee (UUID employeeId) {
+        return employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException(EMPLOYEE_NOT_FOUND));
     }
+
+    private Team validateTeamId(UUID teamId) {
+        return teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException(TEAM_NOT_FOUND));
+    }
+
+    private Project validateProjectId(UUID projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND));
+    }
+
 }

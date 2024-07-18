@@ -1,6 +1,5 @@
 package com.devbridge.learning.Apptasks.controllers;
 
-import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
 import com.devbridge.learning.Apptasks.dtos.TeamDto;
 import com.devbridge.learning.Apptasks.models.Team;
 import com.devbridge.learning.Apptasks.services.TeamService;
@@ -20,7 +19,7 @@ public class TeamController {
     private final static String TEAM_DELETED = "Team deleted successfully";
 
     @GetMapping
-    public List<Team> getAllTeams() {
+    public List<TeamDto> getAllTeams() {
         return teamService.getAllTeams();
     }
 
@@ -34,23 +33,28 @@ public class TeamController {
         return teamService.getTeamByLeaderId(employeeId);
     }
 
-    @GetMapping("/member/{memberId}")
+    @GetMapping("/member/{employeeId}")
     public TeamDto getTeamByMemberId(@PathVariable UUID employeeId) {
         return teamService.getTeamByMemberId(employeeId);
     }
 
+    @GetMapping("/employee/{employeeId}")
+    public TeamDto getTeamByEmployeeId(@PathVariable UUID employeeId) {
+        return teamService.getTeamByEmployeeId(employeeId);
+    }
+
     @PostMapping
-    public Team createTeam(@RequestBody Team team) {
+    public TeamDto createTeam(@RequestBody Team team) {
         return teamService.createTeam(team);
     }
 
     @PutMapping("/{teamId}")
-    public Team updateTeam(@PathVariable UUID teamId, @RequestBody Team team) {
+    public TeamDto updateTeam(@PathVariable UUID teamId, @RequestBody Team team) {
         return teamService.updateTeam(teamId, team);
     }
 
     @PutMapping("/{teamId}/leader")
-    public Team updateTeamLeader(@PathVariable UUID teamId, @RequestParam UUID employeeId) {
+    public TeamDto updateTeamLeader(@PathVariable UUID teamId, @RequestParam UUID employeeId) {
         return teamService.updateTeamLeader(teamId, employeeId);
     }
 
@@ -60,13 +64,4 @@ public class TeamController {
         return ResponseEntity.ok(TEAM_DELETED);
     }
 
-    @PostMapping("/{teamId}/member")
-    public EmployeeDto addMember(@PathVariable UUID teamId, @RequestParam UUID employeeId) {
-        return teamService.addMember(teamId, employeeId);
-    }
-
-    @DeleteMapping("/{teamId}/member")
-    public EmployeeDto removeMember(@PathVariable UUID teamId, @RequestParam UUID employeeId) {
-        return teamService.removeMember(teamId, employeeId);
-    }
 }
