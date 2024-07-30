@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -15,12 +17,15 @@ import java.util.UUID;
 public class Project {
     private UUID projectId;
     private String projectName;
-    private UUID teamId;
     private UUID createdById;
     private OffsetDateTime createdDate;
     private OffsetDateTime startDate;
     private OffsetDateTime initialDeadlineDate;
     private OffsetDateTime endDate;
     private Status status;
-    private int progress;
+    private Integer progress;
+    @Builder.Default
+    private Set<UUID> participantIds = new HashSet<>();
+    @Builder.Default
+    private Set<UUID> teamIds = new HashSet<>();
 }

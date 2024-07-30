@@ -1,11 +1,11 @@
 package com.devbridge.learning.Apptasks.repositories;
 
-import com.devbridge.learning.Apptasks.dtos.TeamDto;
 import com.devbridge.learning.Apptasks.models.Team;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Mapper
@@ -66,6 +66,9 @@ public interface TeamRepository {
                     "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findByTeamId"))
     })
     Optional<Team> findByEmployeeId(UUID employeeId);
+
+    @Select("SELECT team_id FROM project_teams WHERE project_id = #{projectId}")
+    Set<UUID> findTeamIdsByProjectId(UUID projectId);
 
     @Select("SELECT team_id FROM teams WHERE team_leader_id = #{teamLeaderId}")
     List<UUID> findTeamIdsByLeaderId(UUID teamLeaderId);

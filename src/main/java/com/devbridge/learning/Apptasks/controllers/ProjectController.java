@@ -1,11 +1,8 @@
 package com.devbridge.learning.Apptasks.controllers;
 
-import com.devbridge.learning.Apptasks.dtos.TaskDto;
 import com.devbridge.learning.Apptasks.models.Project;
 import com.devbridge.learning.Apptasks.services.ProjectService;
-import com.devbridge.learning.Apptasks.services.TaskService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +15,6 @@ import java.util.UUID;
 public class ProjectController {
 
     private final ProjectService projectService;
-    private final TaskService taskService;
 
     @GetMapping
     public List<Project> getAllProjects() {
@@ -26,8 +22,19 @@ public class ProjectController {
     }
 
     @GetMapping("/employee/{employeeId}")
-    public List<Project> getProjectsByEmployeeId(@PathVariable UUID employeeId) {
+    public List<Project> getUserProjects(@PathVariable UUID employeeId) {
         return projectService.getProjectsByEmployeeId(employeeId);
+    }
+
+
+    @GetMapping("/employee/{employeeId}/status/{status}")
+    public List<Project> getUserProjectsByStatus(@PathVariable UUID employeeId, @PathVariable String status) {
+        return projectService.getProjectsByEmployeeIdAndStatus(employeeId, status);
+    }
+
+    @GetMapping("/employee/createdBy/{employeeId}")
+    public List<Project> getProjectsByCreatedById(@PathVariable UUID employeeId) {
+        return projectService.getProjectsByCreatedById(employeeId);
     }
 
     @GetMapping("/{projectId}")
@@ -43,6 +50,36 @@ public class ProjectController {
     @PutMapping("/{projectId}")
     public Project updateProject(@PathVariable UUID projectId, @RequestBody Project project) {
         return projectService.updateProject(projectId, project);
+    }
+
+    @PostMapping("/{projectId}/addParticipant/{employeeId}")
+    public Project addParticipant(@PathVariable UUID projectId, @PathVariable UUID employeeId) {
+        return projectService.addParticipant(projectId, employeeId);
+    }
+
+    @PostMapping("/{projectId}/removeParticipant/{employeeId}")
+    public Project removeParticipant(@PathVariable UUID projectId, @PathVariable UUID employeeId) {
+        return projectService.removeParticipant(projectId, employeeId);
+    }
+
+    @PostMapping("/{projectId}/addParticipantsByTeam/{teamId}")
+    public Project addParticipantsByTeam(@PathVariable UUID projectId, @PathVariable UUID teamId) {
+        return projectService.addParticipantsByTeam(projectId, teamId);
+    }
+
+    @PostMapping("/{projectId}/removeParticipantsByTeam/{teamId}")
+    public Project removeParticipantsByTeam(@PathVariable UUID projectId, @PathVariable UUID teamId) {
+        return projectService.removeParticipantsByTeam(projectId, teamId);
+    }
+
+    @PostMapping("/{projectId}/addTeam/{teamId}")
+    public Project addTeam(@PathVariable UUID projectId, @PathVariable UUID teamId) {
+        return projectService.addTeam(projectId, teamId);
+    }
+
+    @PostMapping("/{projectId}/removeTeam/{teamId}")
+    public Project removeTeam(@PathVariable UUID projectId, @PathVariable UUID teamId) {
+        return projectService.removeTeam(projectId, teamId);
     }
 
     @DeleteMapping("/{projectId}")

@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @Builder
 public class TeamDto {
     private UUID teamId;

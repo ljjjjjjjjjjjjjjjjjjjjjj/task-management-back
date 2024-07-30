@@ -2,6 +2,7 @@ package com.devbridge.learning.Apptasks.configuration;
 
 import com.devbridge.learning.Apptasks.exceptions.AuthenticationException;
 import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
+import com.devbridge.learning.Apptasks.exceptions.InvalidEnumValueException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.coyote.BadRequestException;
 import org.apache.ibatis.javassist.NotFoundException;
@@ -50,7 +51,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, HttpMessageNotReadableException.class,
+    @ExceptionHandler({IllegalArgumentException.class,
             SQLException.class, JsonMappingException.class, BadRequestException.class})
     public ResponseEntity<ProblemDetail> handleIllegalArgumentException(Exception e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -64,6 +65,20 @@ public class GlobalExceptionHandler {
         printException(e);
         return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ProblemDetail> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        Throwable cause = e.getMostSpecificCause();
+        if (cause instanceof InvalidEnumValueException) {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, cause.getMessage());
+            printException(e);
+            return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
+        }
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid request payload.");
+        printException(e);
+        return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
+    }
+
 
     private void printException(Exception e) {
         System.err.println(e.getMessage());

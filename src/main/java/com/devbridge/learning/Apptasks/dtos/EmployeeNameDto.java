@@ -11,11 +11,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Setter
 @Builder
-public class EmployeeDto {
+public class EmployeeNameDto {
     private UUID employeeId;
     private String firstName;
     private String lastName;
-    private String email;
-    private UUID teamId;
-    private Set<Role> roles;
 }

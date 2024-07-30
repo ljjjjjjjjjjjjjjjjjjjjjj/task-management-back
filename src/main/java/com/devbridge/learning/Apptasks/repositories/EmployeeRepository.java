@@ -1,6 +1,5 @@
 package com.devbridge.learning.Apptasks.repositories;
 
-import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
 import com.devbridge.learning.Apptasks.models.Employee;
 import com.devbridge.learning.Apptasks.models.Role;
 import org.apache.ibatis.annotations.*;
@@ -35,6 +34,9 @@ public interface EmployeeRepository {
             @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     Optional<Employee> findById(UUID employeeId);
+
+    @Select("SELECT employee_id FROM project_participants WHERE project_id = #{projectId}")
+    Set<UUID> findEmployeeIdsByProjectId(UUID projectId);
 
     @Insert("INSERT INTO employees " +
             "(employee_id, first_name, last_name, email, password, team_id) " +

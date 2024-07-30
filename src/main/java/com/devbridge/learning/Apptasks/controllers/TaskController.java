@@ -51,6 +51,16 @@ public class TaskController {
         return taskService.getTasksDetailedByEmployeeId(employeeId);
     }
 
+    @GetMapping("/detailed/assignedto/{employeeId}")
+    public List<TaskDetailedDto> getTasksDetailedByAssignedToId(@PathVariable UUID employeeId) {
+        return taskService.getTasksDetailedByEmployeeId(employeeId);
+    }
+
+    @GetMapping("/detailed/createdby/{employeeId}")
+    public List<TaskDetailedDto> getTasksDetailedByCreatedById(@PathVariable UUID employeeId) {
+        return taskService.getTasksDetailedByEmployeeId(employeeId);
+    }
+
     @PostMapping
     public TaskDto createTask(@RequestBody TaskDto taskDto) {
         return taskService.createTask(taskDto);

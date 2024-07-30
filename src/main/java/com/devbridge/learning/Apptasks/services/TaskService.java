@@ -44,7 +44,7 @@ public class TaskService {
 
     public TaskDetailedDto getTaskDetailedById(UUID taskId) {
         Task existingTask = validateTaskId(taskId);
-        return toDetailedDto(existingTask);
+        return toDetailedDtoInfo(existingTask);
     }
 
     public List<TaskDto> getTasksByProjectId(UUID projectId) {
@@ -57,7 +57,7 @@ public class TaskService {
     public List<TaskDetailedDto> getTasksDetailedByProjectId(UUID projectId) {
         validateProjectId(projectId);
         return taskRepository.findTasksByProjectId(projectId).stream()
-                .map(this::toDetailedDto)
+                .map(this::toDetailedDtoInfo)
                 .collect(Collectors.toList());
     }
 
@@ -68,10 +68,24 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    public List<TaskDto> getTasksByAssignedToId(UUID employeeId) {
+        validateEmployeeId(employeeId);
+        return taskRepository.findTasksByAssignedToId(employeeId).stream()
+                .map(TaskMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskDto> getTasksByCreatedById(UUID employeeId) {
+        validateEmployeeId(employeeId);
+        return taskRepository.findTasksByCreatedById(employeeId).stream()
+                .map(TaskMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public List<TaskDetailedDto> getTasksDetailedByEmployeeId(UUID employeeId) {
         validateEmployeeId(employeeId);
         return taskRepository.findTasksByEmployeeId(employeeId).stream()
-                .map(this::toDetailedDto)
+                .map(this::toDetailedDtoInfo)
                 .collect(Collectors.toList());
     }
 
@@ -197,7 +211,7 @@ public class TaskService {
         existingTask.setProjectId(taskDto.getProjectId());
     }
 
-    private TaskDetailedDto toDetailedDto(Task task) {
+    private TaskDetailedDto toDetailedDtoInfo(Task task) {
         Employee createdByEmployee = employeeRepository.findById(task.getCreatedById())
                 .orElseThrow(() -> new EntityNotFoundException(EMPLOYEE_NOT_FOUND));
 

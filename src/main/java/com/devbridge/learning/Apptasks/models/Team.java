@@ -1,6 +1,5 @@
 package com.devbridge.learning.Apptasks.models;
 
-import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

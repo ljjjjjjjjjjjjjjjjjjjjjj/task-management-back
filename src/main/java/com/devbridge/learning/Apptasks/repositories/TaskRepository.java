@@ -97,6 +97,48 @@ public interface TaskRepository {
     })
     List<Task> findTasksByEmployeeId(UUID employeeId);
 
+    @Select("SELECT t.*, c.category_id as categoryId, c.name as categoryName FROM tasks t " +
+            "LEFT JOIN categories c ON t.category_id = c.category_id " +
+            "WHERE t.assigned_to_id = #{assignedToId}")
+    @Results({
+            @Result(property = "taskId", column = "task_id"),
+            @Result(property = "title", column = "title"),
+            @Result(property = "category.categoryId", column = "categoryId"),
+            @Result(property = "category.name", column = "categoryName"),
+            @Result(property = "description", column = "description"),
+            @Result(property = "createdById", column = "created_by_id"),
+            @Result(property = "assignedToId", column = "assigned_to_id"),
+            @Result(property = "status", column = "status", javaType = Status.class),
+            @Result(property = "projectId", column = "project_id"),
+            @Result(property = "priority", column = "priority", javaType = Priority.class),
+            @Result(property = "createdDate", column = "created_date", javaType = OffsetDateTime.class),
+            @Result(property = "assignedDate", column = "assigned_date", javaType = OffsetDateTime.class),
+            @Result(property = "unassignedDate", column = "unassigned_date", javaType = OffsetDateTime.class),
+            @Result(property = "doneDate", column = "done_date", javaType = OffsetDateTime.class)
+    })
+    List<Task> findTasksByAssignedToId(UUID employeeId);
+
+    @Select("SELECT t.*, c.category_id as categoryId, c.name as categoryName FROM tasks t " +
+            "LEFT JOIN categories c ON t.category_id = c.category_id " +
+            "WHERE t.created_by_id = #{createdById}")
+    @Results({
+            @Result(property = "taskId", column = "task_id"),
+            @Result(property = "title", column = "title"),
+            @Result(property = "category.categoryId", column = "categoryId"),
+            @Result(property = "category.name", column = "categoryName"),
+            @Result(property = "description", column = "description"),
+            @Result(property = "createdById", column = "created_by_id"),
+            @Result(property = "assignedToId", column = "assigned_to_id"),
+            @Result(property = "status", column = "status", javaType = Status.class),
+            @Result(property = "projectId", column = "project_id"),
+            @Result(property = "priority", column = "priority", javaType = Priority.class),
+            @Result(property = "createdDate", column = "created_date", javaType = OffsetDateTime.class),
+            @Result(property = "assignedDate", column = "assigned_date", javaType = OffsetDateTime.class),
+            @Result(property = "unassignedDate", column = "unassigned_date", javaType = OffsetDateTime.class),
+            @Result(property = "doneDate", column = "done_date", javaType = OffsetDateTime.class)
+    })
+    List<Task> findTasksByCreatedById(UUID employeeId);
+
     @Insert("INSERT INTO tasks (task_id, title, category_id, description, created_by_id, " +
             "assigned_to_id, status, priority, project_id, created_date, assigned_date, unassigned_date, done_date) " +
             "VALUES (#{taskId}, #{title}, #{category.categoryId}, #{description}, #{createdById}, " +

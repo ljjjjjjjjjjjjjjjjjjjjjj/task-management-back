@@ -7,6 +7,7 @@ import com.devbridge.learning.Apptasks.models.Task;
 import com.devbridge.learning.Apptasks.models.Category;
 import com.devbridge.learning.Apptasks.models.Priority;
 import com.devbridge.learning.Apptasks.models.Status;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public class TaskMapper {
     public static TaskDto toDto(Task task) {
@@ -78,17 +79,18 @@ public class TaskMapper {
 
     public static Status toStatus(String statusStr) {
         try {
-            return statusStr != null ? Status.valueOf(statusStr.toUpperCase()) : null;
+            return statusStr != null ? Status.fromString(statusStr) : null;
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidEnumValueException("Invalid status value: " + statusStr);
+            throw new InvalidEnumValueException("status", statusStr);
         }
     }
 
+
     public static Priority toPriority(String priorityStr) {
         try {
-            return priorityStr != null ? Priority.valueOf(priorityStr.toUpperCase()) : null;
+            return priorityStr != null ? Priority.fromString(priorityStr) : null;
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidEnumValueException("Invalid priority value: " + priorityStr);
+            throw new InvalidEnumValueException("priority", priorityStr);
         }
     }
 }
