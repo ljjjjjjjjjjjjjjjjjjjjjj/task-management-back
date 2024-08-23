@@ -1,8 +1,12 @@
 package com.devbridge.learning.Apptasks.mappers;
 
 import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
+import com.devbridge.learning.Apptasks.dtos.EmployeeNameDto;
 import com.devbridge.learning.Apptasks.dtos.EmployeeRegistrationDto;
 import com.devbridge.learning.Apptasks.models.Employee;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EmployeeMapper {
     public static EmployeeDto toDto(Employee employee) {
@@ -47,5 +51,26 @@ public class EmployeeMapper {
                 .email(employeeRegistrationDto.getEmail())
                 .password(employeeRegistrationDto.getPassword())
                 .build();
+    }
+
+    public static EmployeeNameDto toNameDto(Employee employee) {
+        if (employee == null) {
+            return null;
+        }
+
+        return EmployeeNameDto.builder()
+                .employeeId(employee.getEmployeeId())
+                .firstName(employee.getFirstName())
+                .lastName(employee.getLastName())
+                .build();
+    }
+
+    public static Set<EmployeeNameDto> toNameDtoSet(Set<Employee> employees) {
+        if (employees == null) {
+            return null;
+        }
+        return employees.stream()
+                .map(EmployeeMapper::toNameDto)
+                .collect(Collectors.toSet());
     }
 }

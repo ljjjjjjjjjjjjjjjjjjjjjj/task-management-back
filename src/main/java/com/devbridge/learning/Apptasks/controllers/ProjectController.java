@@ -1,5 +1,6 @@
 package com.devbridge.learning.Apptasks.controllers;
 
+import com.devbridge.learning.Apptasks.dtos.ProjectDetailedDto;
 import com.devbridge.learning.Apptasks.models.Project;
 import com.devbridge.learning.Apptasks.services.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,19 @@ public class ProjectController {
         return projectService.getProjectsByEmployeeId(employeeId);
     }
 
+    @GetMapping("/detailed/employee/{employeeId}")
+    public List<ProjectDetailedDto> getUserProjectsDetailed(@PathVariable UUID employeeId) {
+        return projectService.getDetailedProjectsByEmployeeId(employeeId);
+    }
 
     @GetMapping("/employee/{employeeId}/status/{status}")
     public List<Project> getUserProjectsByStatus(@PathVariable UUID employeeId, @PathVariable String status) {
         return projectService.getProjectsByEmployeeIdAndStatus(employeeId, status);
+    }
+
+    @GetMapping("/detailed/employee/{employeeId}/status/{status}")
+    public List<ProjectDetailedDto> getUserProjectsDetailedByStatus(@PathVariable UUID employeeId, @PathVariable String status) {
+        return projectService.getDetailedProjectsByEmployeeIdAndStatus(employeeId, status);
     }
 
     @GetMapping("/employee/createdBy/{employeeId}")

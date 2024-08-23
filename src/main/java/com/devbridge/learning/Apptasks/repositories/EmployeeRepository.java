@@ -35,6 +35,25 @@ public interface EmployeeRepository {
     })
     Optional<Employee> findById(UUID employeeId);
 
+    @Select({
+            "<script>",
+            "SELECT * FROM employees WHERE employee_id IN",
+            "<foreach item='id' collection='ids' open='(' separator=',' close=')'>",
+            "#{id}",
+            "</foreach>",
+            "</script>"
+    })
+    @Results({
+            @Result(property = "employeeId", column = "employee_id"),
+            @Result(property = "firstName", column = "first_name"),
+            @Result(property = "lastName", column = "last_name"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "password", column = "password"),
+            @Result(property = "teamId", column = "team_id"),
+            @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
+    })
+    Set<Employee> findByIds(@Param("ids") Set<UUID> ids);
+
     @Select("SELECT employee_id FROM project_participants WHERE project_id = #{projectId}")
     Set<UUID> findEmployeeIdsByProjectId(UUID projectId);
 

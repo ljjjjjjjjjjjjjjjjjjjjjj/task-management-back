@@ -1,6 +1,9 @@
 package com.devbridge.learning.Apptasks.services;
 
+import com.devbridge.learning.Apptasks.dtos.ProjectDetailedDto;
 import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
+import com.devbridge.learning.Apptasks.mappers.EmployeeMapper;
+import com.devbridge.learning.Apptasks.mappers.ProjectMapper;
 import com.devbridge.learning.Apptasks.models.*;
 import com.devbridge.learning.Apptasks.repositories.EmployeeRepository;
 import com.devbridge.learning.Apptasks.repositories.ProjectRepository;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final TeamRepository teamRepository;
     private final EmployeeRepository employeeRepository;
+    private final ProjectMapper projectMapper;
 
     private final static String PROJECT_NOT_FOUND = "Project with given id not found";
     private final static String TEAM_NOT_FOUND = "Team with given id not found";
@@ -37,10 +42,25 @@ public class ProjectService {
         return projectRepository.findByEmployeeId(employeeId);
     }
 
+    public List<ProjectDetailedDto> getDetailedProjectsByEmployeeId(UUID employeeId) {
+        validateEmployee(employeeId);
+        List <Project> userProjects = projectRepository.findByEmployeeId(employeeId);
+        return userProjects.stream()
+                .map(projectMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public List<Project> getProjectsByEmployeeIdAndStatus(UUID employeeId, String status) {
         validateEmployee(employeeId);
-        List<Project> projects = projectRepository.findByEmployeeIdAndStatus(employeeId,status);
-        return projects;
+        return projectRepository.findByEmployeeIdAndStatus(employeeId,status);
+    }
+
+    public List<ProjectDetailedDto> getDetailedProjectsByEmployeeIdAndStatus(UUID employeeId, String status) {
+        validateEmployee(employeeId);
+        List <Project> userProjects = projectRepository.findByEmployeeIdAndStatus(employeeId,status);
+        return userProjects.stream()
+                .map(projectMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public List<Project> getProjectsByCreatedById(UUID employeeId) {

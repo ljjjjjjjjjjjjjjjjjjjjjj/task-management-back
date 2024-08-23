@@ -1,6 +1,7 @@
 package com.devbridge.learning.Apptasks.services;
 
 import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
+import com.devbridge.learning.Apptasks.dtos.EmployeeNameDto;
 import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
 import com.devbridge.learning.Apptasks.mappers.EmployeeMapper;
 import com.devbridge.learning.Apptasks.models.Employee;
@@ -44,6 +45,11 @@ public class EmployeeService {
     public EmployeeDto getEmployeeById(UUID employeeId) {
         Employee existingEmployee  = validateEmployeeId(employeeId);
         return EmployeeMapper.toDto(existingEmployee);
+    }
+
+    public Set<EmployeeNameDto> getEmployeeNameDtosByIds(Set<UUID> ids) {
+        Set<Employee> employees = employeeRepository.findByIds(ids);
+        return EmployeeMapper.toNameDtoSet(employees);
     }
 
     public List<EmployeeDto> getEmployeesByTeamId (UUID teamId) {

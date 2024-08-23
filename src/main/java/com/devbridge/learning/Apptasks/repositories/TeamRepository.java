@@ -1,5 +1,6 @@
 package com.devbridge.learning.Apptasks.repositories;
 
+import com.devbridge.learning.Apptasks.models.Employee;
 import com.devbridge.learning.Apptasks.models.Team;
 import org.apache.ibatis.annotations.*;
 
@@ -31,6 +32,24 @@ public interface TeamRepository {
                     "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findByTeamId"))
     })
     Optional<Team> findById(UUID teamId);
+
+
+    @Select({
+            "<script>",
+            "SELECT * FROM teams WHERE team_id IN",
+            "<foreach item='teamId' collection='teamIds' open='(' separator=',' close=')'>",
+            "#{teamId}",
+            "</foreach>",
+            "</script>"
+    })
+    @Results({
+            @Result(property = "teamId", column = "team_id"),
+            @Result(property = "teamName", column = "team_name"),
+            @Result(property = "teamLeaderId", column = "team_leader_id"),
+            @Result(property = "teamMembers", column = "team_id", many = @Many(select =
+                    "com.devbridge.learning.Apptasks.repositories.EmployeeRepository.findByTeamId"))
+    })
+    Set<Team> findByIds(@Param("teamIds") Set<UUID> teamIds);
 
     @Select("SELECT team_id, team_name, team_leader_id FROM teams " +
             "WHERE team_leader_id = #{teamLeaderId}")

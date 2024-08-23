@@ -1,8 +1,11 @@
 package com.devbridge.learning.Apptasks.services;
 
 import com.devbridge.learning.Apptasks.dtos.TeamDto;
+import com.devbridge.learning.Apptasks.dtos.TeamNameDto;
 import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
+import com.devbridge.learning.Apptasks.mappers.EmployeeMapper;
 import com.devbridge.learning.Apptasks.mappers.TeamMapper;
+import com.devbridge.learning.Apptasks.models.Employee;
 import com.devbridge.learning.Apptasks.models.Team;
 import com.devbridge.learning.Apptasks.repositories.EmployeeRepository;
 import com.devbridge.learning.Apptasks.repositories.TeamRepository;
@@ -10,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,15 @@ public class TeamService {
     public TeamDto getTeamById(UUID teamId) {
         Team existingTeam = validateTeamId(teamId);
         return teamMapper.toDto(existingTeam);
+    }
+
+    public Set<TeamNameDto> getTeamNameDtosByIds(Set<UUID> teamIds) {
+        if (teamIds == null || teamIds.isEmpty()) {
+            return Set.of();
+        }
+
+        Set<Team> teams = teamRepository.findByIds(teamIds);
+        return TeamMapper.toNameDtoSet(teams);
     }
 
     public TeamDto getTeamByLeaderId(UUID employeeId) {
