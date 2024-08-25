@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ProblemDetail> handleEntityNotFoundException(AuthenticationException e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, AuthenticationException.DETAIL);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
         problemDetail.setProperties(Collections.unmodifiableMap(e.getValidationErrors()));
         printException(e);
         return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);

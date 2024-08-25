@@ -64,11 +64,13 @@ public class AuthService {
         Map<String, Object> validationErrors = new HashMap<>();
 
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    authRequest.getEmail(), authRequest.getPassword()));
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                    authRequest.getEmail(), authRequest.getPassword())
+            );
         } catch (BadCredentialsException e) {
             validationErrors.put("error", INVALID_CREDENTIALS);
-            throw new AuthenticationException(validationErrors);
+            throw new AuthenticationException(INVALID_CREDENTIALS, validationErrors);
         }
 
         final UserDetails userDetails = loadUserByUsername(authRequest.getEmail());
