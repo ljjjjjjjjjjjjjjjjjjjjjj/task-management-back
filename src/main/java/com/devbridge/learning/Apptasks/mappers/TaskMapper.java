@@ -1,13 +1,11 @@
 package com.devbridge.learning.Apptasks.mappers;
 
+import com.devbridge.learning.Apptasks.dtos.EmployeeNameAndImageDto;
 import com.devbridge.learning.Apptasks.dtos.TaskDetailedDto;
+import com.devbridge.learning.Apptasks.dtos.TaskDetailedWithPhotosDto;
 import com.devbridge.learning.Apptasks.dtos.TaskDto;
 import com.devbridge.learning.Apptasks.exceptions.InvalidEnumValueException;
-import com.devbridge.learning.Apptasks.models.Task;
-import com.devbridge.learning.Apptasks.models.Category;
-import com.devbridge.learning.Apptasks.models.Priority;
-import com.devbridge.learning.Apptasks.models.Status;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.devbridge.learning.Apptasks.models.*;
 
 public class TaskMapper {
     public static TaskDto toDto(Task task) {
@@ -48,6 +46,34 @@ public class TaskMapper {
                 .assignedToId(task.getAssignedToId())
                 .assignedToFirstName(assignedToFirstName)
                 .assignedToLastName(assignedToLastName)
+                .status(task.getStatus() != null ? task.getStatus().toString() : null)
+                .priority(task.getPriority() != null ? task.getPriority().toString() : null)
+                .projectId(task.getProjectId())
+                .projectName(projectName)
+                .createdDate(task.getCreatedDate())
+                .assignedDate(task.getAssignedDate())
+                .unassignedDate(task.getUnassignedDate())
+                .doneDate(task.getDoneDate())
+                .build();
+    }
+
+    public static TaskDetailedWithPhotosDto toDetailedWithPhotosDto(
+            Task task,
+            EmployeeNameAndImageDto createdByEmployee,
+            EmployeeNameAndImageDto assignedToEmployee,
+            String projectName
+    ) {
+        if (task == null) {
+            return null;
+        }
+
+        return TaskDetailedWithPhotosDto.builder()
+                .taskId(task.getTaskId())
+                .title(task.getTitle())
+                .categoryId(task.getCategory() != null ? task.getCategory().getCategoryId() : null)
+                .description(task.getDescription())
+                .createdByEmployee(createdByEmployee)
+                .assignedToEmployee(assignedToEmployee)
                 .status(task.getStatus() != null ? task.getStatus().toString() : null)
                 .priority(task.getPriority() != null ? task.getPriority().toString() : null)
                 .projectId(task.getProjectId())

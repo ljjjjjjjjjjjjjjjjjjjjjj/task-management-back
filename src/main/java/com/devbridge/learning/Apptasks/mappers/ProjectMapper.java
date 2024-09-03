@@ -1,6 +1,7 @@
 package com.devbridge.learning.Apptasks.mappers;
 
 import com.devbridge.learning.Apptasks.dtos.ProjectDetailedDto;
+import com.devbridge.learning.Apptasks.dtos.ProjectDetailedWithPhotosDto;
 import com.devbridge.learning.Apptasks.models.Project;
 import com.devbridge.learning.Apptasks.services.EmployeeService;
 import com.devbridge.learning.Apptasks.services.TeamService;
@@ -35,6 +36,35 @@ public class ProjectMapper {
                 .teams(
                         teamService.getTeamNameDtosByIds(
                         project.getTeamIds()
+                        )
+                )
+                .build();
+    }
+
+    public ProjectDetailedWithPhotosDto toDtoWithPhotos(Project project) {
+        if (project == null) {
+            return null;
+        }
+
+        return ProjectDetailedWithPhotosDto.builder()
+                .projectId(project.getProjectId())
+                .projectName(project.getProjectName())
+                .createdByEmployee(
+                        employeeService.getEmployeeNameAndImageDtoById(project.getCreatedById())
+                )
+                .createdDate(project.getCreatedDate())
+                .startDate(project.getStartDate())
+                .endDate(project.getEndDate())
+                .status(project.getStatus())
+                .progress(project.getProgress())
+                .participants(
+                        employeeService.getEmployeeNameAndImageDtosByIds(
+                                project.getParticipantIds()
+                        )
+                )
+                .teams(
+                        teamService.getTeamNameDtosByIds(
+                                project.getTeamIds()
                         )
                 )
                 .build();

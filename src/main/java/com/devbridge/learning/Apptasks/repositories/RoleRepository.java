@@ -2,7 +2,6 @@ package com.devbridge.learning.Apptasks.repositories;
 
 import com.devbridge.learning.Apptasks.models.Role;
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;

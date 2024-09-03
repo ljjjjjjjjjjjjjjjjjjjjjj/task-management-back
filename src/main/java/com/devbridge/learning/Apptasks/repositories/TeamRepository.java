@@ -1,6 +1,5 @@
 package com.devbridge.learning.Apptasks.repositories;
 
-import com.devbridge.learning.Apptasks.models.Employee;
 import com.devbridge.learning.Apptasks.models.Team;
 import org.apache.ibatis.annotations.*;
 

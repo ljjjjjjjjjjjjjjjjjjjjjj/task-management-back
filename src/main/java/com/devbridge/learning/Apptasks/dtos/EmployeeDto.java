@@ -6,10 +6,9 @@ import lombok.*;
 import java.util.Set;
 import java.util.UUID;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Builder
 public class EmployeeDto {
     private UUID employeeId;
@@ -17,5 +16,6 @@ public class EmployeeDto {
     private String lastName;
     private String email;
     private UUID teamId;
+    private UUID imageId;
     private Set<Role> roles;
 }

@@ -1,11 +1,14 @@
 package com.devbridge.learning.Apptasks.controllers;
 
 import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
+import com.devbridge.learning.Apptasks.dtos.EmployeeNameAndImageDto;
 import com.devbridge.learning.Apptasks.services.EmployeeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +31,17 @@ public class EmployeeController {
     @GetMapping("/{employeeId}")
     public EmployeeDto getEmployeeById(@PathVariable UUID employeeId) {
         return employeeService.getEmployeeById(employeeId);
+    }
+
+    @GetMapping("/with-images/by-ids")
+    public ResponseEntity<Set<EmployeeNameAndImageDto>> getEmployeeNameAndImageDtosByIds(@RequestParam Set<UUID> ids) {
+        Set<EmployeeNameAndImageDto> employeeDtos = employeeService.getEmployeeNameAndImageDtosByIds(ids);
+        return ResponseEntity.ok(employeeDtos);
+    }
+
+    @GetMapping("/with-images/all")
+    public List<EmployeeNameAndImageDto> getEmployeeNameAndImageDtosAll() {
+        return employeeService.getEmployeeNameAndImageDtosAll();
     }
 
     @PutMapping("/{employeeId}")

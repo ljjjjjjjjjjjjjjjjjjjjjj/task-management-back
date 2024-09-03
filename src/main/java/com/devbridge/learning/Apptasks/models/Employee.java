@@ -20,4 +20,5 @@ public class Employee {
     private String password;
     private Set<Role> roles;
     private UUID teamId;
+    private UUID imageId;
 }

@@ -1,6 +1,7 @@
 package com.devbridge.learning.Apptasks.services;
 
 import com.devbridge.learning.Apptasks.dtos.ProjectDetailedDto;
+import com.devbridge.learning.Apptasks.dtos.ProjectDetailedWithPhotosDto;
 import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
 import com.devbridge.learning.Apptasks.mappers.EmployeeMapper;
 import com.devbridge.learning.Apptasks.mappers.ProjectMapper;
@@ -42,11 +43,11 @@ public class ProjectService {
         return projectRepository.findByEmployeeId(employeeId);
     }
 
-    public List<ProjectDetailedDto> getDetailedProjectsByEmployeeId(UUID employeeId) {
+    public List<ProjectDetailedWithPhotosDto> getDetailedProjectsByEmployeeId(UUID employeeId) {
         validateEmployee(employeeId);
         List <Project> userProjects = projectRepository.findByEmployeeId(employeeId);
         return userProjects.stream()
-                .map(projectMapper::toDto)
+                .map(projectMapper::toDtoWithPhotos)
                 .collect(Collectors.toList());
     }
 
@@ -55,11 +56,11 @@ public class ProjectService {
         return projectRepository.findByEmployeeIdAndStatus(employeeId,status);
     }
 
-    public List<ProjectDetailedDto> getDetailedProjectsByEmployeeIdAndStatus(UUID employeeId, String status) {
+    public List<ProjectDetailedWithPhotosDto> getDetailedProjectsByEmployeeIdAndStatus(UUID employeeId, String status) {
         validateEmployee(employeeId);
         List <Project> userProjects = projectRepository.findByEmployeeIdAndStatus(employeeId,status);
         return userProjects.stream()
-                .map(projectMapper::toDto)
+                .map(projectMapper::toDtoWithPhotos)
                 .collect(Collectors.toList());
     }
 

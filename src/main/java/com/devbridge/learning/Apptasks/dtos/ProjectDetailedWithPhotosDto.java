@@ -12,12 +12,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProjectDetailedDto {
+public class ProjectDetailedWithPhotosDto {
     private UUID projectId;
     private String projectName;
-    private UUID createdById;
-    private String createdByFirstName;
-    private String createdByLastName;
+    private EmployeeNameAndImageDto createdByEmployee;
 
     private OffsetDateTime createdDate;
     private OffsetDateTime startDate;
@@ -28,7 +26,8 @@ public class ProjectDetailedDto {
     private Integer progress;
 
     @Builder.Default
-    private Set<EmployeeNameDto> participants = new HashSet<>();
+    private Set<EmployeeNameAndImageDto> participants = new HashSet<>();
     @Builder.Default
     private Set<TeamNameDto> teams = new HashSet<>();
 }
+

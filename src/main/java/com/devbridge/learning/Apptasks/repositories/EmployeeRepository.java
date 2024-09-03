@@ -19,6 +19,7 @@ public interface EmployeeRepository {
             @Result(property = "email", column = "email"),
             @Result(property = "password", column = "password"),
             @Result(property = "teamId", column = "team_id"),
+            @Result(property = "imageId", column = "image_id"),
             @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     List<Employee> findAll();
@@ -31,6 +32,7 @@ public interface EmployeeRepository {
             @Result(property = "email", column = "email"),
             @Result(property = "password", column = "password"),
             @Result(property = "teamId", column = "team_id"),
+            @Result(property = "imageId", column = "image_id"),
             @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     Optional<Employee> findById(UUID employeeId);
@@ -50,6 +52,7 @@ public interface EmployeeRepository {
             @Result(property = "email", column = "email"),
             @Result(property = "password", column = "password"),
             @Result(property = "teamId", column = "team_id"),
+            @Result(property = "imageId", column = "image_id"),
             @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     Set<Employee> findByIds(@Param("ids") Set<UUID> ids);
@@ -76,6 +79,7 @@ public interface EmployeeRepository {
             @Result(property = "email", column = "email"),
             @Result(property = "password", column = "password"),
             @Result(property = "teamId", column = "team_id"),
+            @Result(property = "imageId", column = "image_id"),
             @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     Optional<Employee> findByEmail(String email);
@@ -88,6 +92,7 @@ public interface EmployeeRepository {
             @Result(property = "email", column = "email"),
             @Result(property = "password", column = "password"),
             @Result(property = "teamId", column = "team_id"),
+            @Result(property = "imageId", column = "image_id"),
             @Result(property = "roles", column = "employee_id", many = @Many(select = "getRolesByEmployeeId"))
     })
     List<Employee> findByTeamId(UUID teamId);
@@ -124,4 +129,8 @@ public interface EmployeeRepository {
             "WHERE employee_id = #{employeeId}")
     void removeFromTeam(@Param("employeeId") UUID employeeId);
 
+    @Update("UPDATE employees " +
+            "SET image_id = #{imageId} " +
+            "WHERE employee_id = #{employeeId}")
+    void updateImageIdForEmployee(UUID employeeId, UUID imageId);
 }

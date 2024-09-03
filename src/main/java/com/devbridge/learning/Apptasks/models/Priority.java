@@ -3,7 +3,6 @@ package com.devbridge.learning.Apptasks.models;
 import com.devbridge.learning.Apptasks.exceptions.InvalidEnumValueException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import java.util.Arrays;
 

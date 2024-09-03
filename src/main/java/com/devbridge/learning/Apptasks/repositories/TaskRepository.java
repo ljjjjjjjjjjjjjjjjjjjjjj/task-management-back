@@ -1,11 +1,9 @@
 package com.devbridge.learning.Apptasks.repositories;
 
-import com.devbridge.learning.Apptasks.dtos.TaskDto;
 import com.devbridge.learning.Apptasks.models.Task;
 import com.devbridge.learning.Apptasks.models.Priority;
 import com.devbridge.learning.Apptasks.models.Status;
 import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.EnumTypeHandler;
 
 import java.time.OffsetDateTime;
 import java.util.List;

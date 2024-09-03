@@ -1,6 +1,7 @@
 package com.devbridge.learning.Apptasks.controllers;
 
 import com.devbridge.learning.Apptasks.dtos.TaskDetailedDto;
+import com.devbridge.learning.Apptasks.dtos.TaskDetailedWithPhotosDto;
 import com.devbridge.learning.Apptasks.dtos.TaskDto;
 import com.devbridge.learning.Apptasks.services.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class TaskController {
     }
 
     @GetMapping("/detailed/{taskId}")
-    public TaskDetailedDto getTaskDetailedById(@PathVariable UUID taskId) {
+    public TaskDetailedWithPhotosDto getTaskDetailedWithPhotosById(@PathVariable UUID taskId) {
         return taskService.getTaskDetailedById(taskId);
     }
 
@@ -37,7 +38,7 @@ public class TaskController {
     }
 
     @GetMapping("/detailed/project/{projectId}")
-    public List<TaskDetailedDto> getTasksDetailedByProjectId(@PathVariable UUID projectId) {
+    public List<TaskDetailedWithPhotosDto> getTasksDetailedWithPhotosByProjectId(@PathVariable UUID projectId) {
         return taskService.getTasksDetailedByProjectId(projectId);
     }
 
@@ -47,17 +48,17 @@ public class TaskController {
     }
 
     @GetMapping("/detailed/employee/{employeeId}")
-    public List<TaskDetailedDto> getTasksDetailedByEmployeeId(@PathVariable UUID employeeId) {
+    public List<TaskDetailedWithPhotosDto> getTasksDetailedWithPhotosByEmployeeId(@PathVariable UUID employeeId) {
         return taskService.getTasksDetailedByEmployeeId(employeeId);
     }
 
     @GetMapping("/detailed/assignedto/{employeeId}")
-    public List<TaskDetailedDto> getTasksDetailedByAssignedToId(@PathVariable UUID employeeId) {
+    public List<TaskDetailedWithPhotosDto> getTasksDetailedWithPhotosByAssignedToId(@PathVariable UUID employeeId) {
         return taskService.getTasksDetailedByEmployeeId(employeeId);
     }
 
     @GetMapping("/detailed/createdby/{employeeId}")
-    public List<TaskDetailedDto> getTasksDetailedByCreatedById(@PathVariable UUID employeeId) {
+    public List<TaskDetailedWithPhotosDto> getTasksDetailedWithPhotosByCreatedById(@PathVariable UUID employeeId) {
         return taskService.getTasksDetailedByEmployeeId(employeeId);
     }
 

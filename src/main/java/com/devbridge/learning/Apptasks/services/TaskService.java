@@ -1,6 +1,8 @@
 package com.devbridge.learning.Apptasks.services;
 
+import com.devbridge.learning.Apptasks.dtos.EmployeeNameAndImageDto;
 import com.devbridge.learning.Apptasks.dtos.TaskDetailedDto;
+import com.devbridge.learning.Apptasks.dtos.TaskDetailedWithPhotosDto;
 import com.devbridge.learning.Apptasks.dtos.TaskDto;
 import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
 import com.devbridge.learning.Apptasks.mappers.TaskMapper;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,8 @@ public class TaskService {
     private final CategoryRepository categoryRepository;
     private final EmployeeRepository employeeRepository;
     private final ProjectRepository projectRepository;
+
+    private final EmployeeService employeeService;
     private final static String TASK_NOT_FOUND = "Task with given id not found";
     private static final String CATEGORY_NOT_FOUND = "Category with given id not found";
     private static final String EMPLOYEE_NOT_FOUND = "Employee with given id not found";
@@ -42,9 +47,9 @@ public class TaskService {
         return TaskMapper.toDto(existingTask);
     }
 
-    public TaskDetailedDto getTaskDetailedById(UUID taskId) {
+    public TaskDetailedWithPhotosDto getTaskDetailedById(UUID taskId) {
         Task existingTask = validateTaskId(taskId);
-        return toDetailedDtoInfo(existingTask);
+        return toDetailedDtoWithPhotosInfo(existingTask);
     }
 
     public List<TaskDto> getTasksByProjectId(UUID projectId) {
@@ -54,10 +59,10 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
-    public List<TaskDetailedDto> getTasksDetailedByProjectId(UUID projectId) {
+    public List<TaskDetailedWithPhotosDto> getTasksDetailedByProjectId(UUID projectId) {
         validateProjectId(projectId);
         return taskRepository.findTasksByProjectId(projectId).stream()
-                .map(this::toDetailedDtoInfo)
+                .map(this::toDetailedDtoWithPhotosInfo)
                 .collect(Collectors.toList());
     }
 
@@ -82,10 +87,10 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
-    public List<TaskDetailedDto> getTasksDetailedByEmployeeId(UUID employeeId) {
+    public List<TaskDetailedWithPhotosDto> getTasksDetailedByEmployeeId(UUID employeeId) {
         validateEmployeeId(employeeId);
         return taskRepository.findTasksByEmployeeId(employeeId).stream()
-                .map(this::toDetailedDtoInfo)
+                .map(this::toDetailedDtoWithPhotosInfo)
                 .collect(Collectors.toList());
     }
 
@@ -166,10 +171,10 @@ public class TaskService {
         }
     }
 
-    private void validateEmployeeId(UUID employeeId) {
-        if (employeeRepository.findById(employeeId).isEmpty()) {
-            throw new EntityNotFoundException(EMPLOYEE_NOT_FOUND);
-        }
+    private Employee validateEmployeeId(UUID employeeId) {
+        Employee existingEmployee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException(EMPLOYEE_NOT_FOUND));
+        return existingEmployee;
     }
 
     private Project validateProjectId(UUID projectId) {
@@ -211,24 +216,22 @@ public class TaskService {
         existingTask.setProjectId(taskDto.getProjectId());
     }
 
-    private TaskDetailedDto toDetailedDtoInfo(Task task) {
-        Employee createdByEmployee = employeeRepository.findById(task.getCreatedById())
-                .orElseThrow(() -> new EntityNotFoundException(EMPLOYEE_NOT_FOUND));
+    private TaskDetailedWithPhotosDto toDetailedDtoWithPhotosInfo(Task task) {
+        EmployeeNameAndImageDto createdByEmployee = employeeService.getEmployeeNameAndImageDtoById(task.getCreatedById());
+        EmployeeNameAndImageDto assignedToEmployee = null;
 
-        Employee assignedToEmployee = task.getAssignedToId() != null
-                ? employeeRepository.findById(task.getAssignedToId()).orElse(null)
-                : null;
+        if (task.getAssignedToId() != null) {
+            assignedToEmployee = employeeService.getEmployeeNameAndImageDtoById(task.getAssignedToId());
+        }
 
         Project project = task.getProjectId() != null
                 ? projectRepository.findById(task.getProjectId()).orElse(null)
                 : null;
 
-        return TaskMapper.toDetailedDto(
+        return TaskMapper.toDetailedWithPhotosDto(
                 task,
-                createdByEmployee.getFirstName(),
-                createdByEmployee.getLastName(),
-                assignedToEmployee != null ? assignedToEmployee.getFirstName() : null,
-                assignedToEmployee != null ? assignedToEmployee.getLastName() : null,
+                createdByEmployee,
+                assignedToEmployee,
                 project != null ? project.getProjectName() : null
         );
     }

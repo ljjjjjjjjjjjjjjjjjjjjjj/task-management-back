@@ -9,16 +9,21 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TaskDto {
+public class TaskDetailedWithPhotosDto {
     private UUID taskId;
     private String title;
     private UUID categoryId;
     private String description;
-    private UUID createdById;
-    private UUID assignedToId;
+
+    private EmployeeNameAndImageDto createdByEmployee;
+    private EmployeeNameAndImageDto assignedToEmployee;
+
     private String status;
     private String priority;
+
     private UUID projectId;
+    private String projectName;
+
     private OffsetDateTime createdDate;
     private OffsetDateTime assignedDate;
     private OffsetDateTime unassignedDate;

@@ -2,13 +2,11 @@ package com.devbridge.learning.Apptasks.dtos;
 
 import lombok.*;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Builder
 public class TaskNameDto {
     private UUID taskId;

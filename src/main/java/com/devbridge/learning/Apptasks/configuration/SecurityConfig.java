@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/teams/**").permitAll() // TODO - change permitAll to o authenticated access
                         .requestMatchers("/projects/**").permitAll() // TODO - change permitAll to o authenticated access
                         .requestMatchers("/roles/**").permitAll() // TODO - change permitAll to o authenticated access
+                        .requestMatchers("/images-employee/**").permitAll() // TODO - change permitAll to o authenticated access
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

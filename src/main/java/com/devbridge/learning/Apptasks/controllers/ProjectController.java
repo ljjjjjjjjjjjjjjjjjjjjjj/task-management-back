@@ -1,6 +1,7 @@
 package com.devbridge.learning.Apptasks.controllers;
 
 import com.devbridge.learning.Apptasks.dtos.ProjectDetailedDto;
+import com.devbridge.learning.Apptasks.dtos.ProjectDetailedWithPhotosDto;
 import com.devbridge.learning.Apptasks.models.Project;
 import com.devbridge.learning.Apptasks.services.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class ProjectController {
     }
 
     @GetMapping("/detailed/employee/{employeeId}")
-    public List<ProjectDetailedDto> getUserProjectsDetailed(@PathVariable UUID employeeId) {
+    public List<ProjectDetailedWithPhotosDto> getUserProjectsDetailed(@PathVariable UUID employeeId) {
         return projectService.getDetailedProjectsByEmployeeId(employeeId);
     }
 
@@ -38,7 +39,7 @@ public class ProjectController {
     }
 
     @GetMapping("/detailed/employee/{employeeId}/status/{status}")
-    public List<ProjectDetailedDto> getUserProjectsDetailedByStatus(@PathVariable UUID employeeId, @PathVariable String status) {
+    public List<ProjectDetailedWithPhotosDto> getUserProjectsDetailedByStatus(@PathVariable UUID employeeId, @PathVariable String status) {
         return projectService.getDetailedProjectsByEmployeeIdAndStatus(employeeId, status);
     }
 

@@ -1,15 +1,11 @@
 package com.devbridge.learning.Apptasks.dtos;
 
 import lombok.*;
-
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Builder
 public class TeamNameDto {
     private UUID teamId;

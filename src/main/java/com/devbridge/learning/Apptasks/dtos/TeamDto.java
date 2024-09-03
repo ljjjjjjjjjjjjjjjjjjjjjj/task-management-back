@@ -6,10 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Builder
 public class TeamDto {
     private UUID teamId;

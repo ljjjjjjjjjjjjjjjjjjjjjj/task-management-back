@@ -26,6 +26,7 @@ dependencies {
 	implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	implementation 'net.coobird:thumbnailator:0.4.14'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
 
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'

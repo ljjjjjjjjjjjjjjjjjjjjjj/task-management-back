@@ -1,21 +1,22 @@
 package com.devbridge.learning.Apptasks.services;
 
 import com.devbridge.learning.Apptasks.dtos.EmployeeDto;
+import com.devbridge.learning.Apptasks.dtos.EmployeeNameAndImageDto;
 import com.devbridge.learning.Apptasks.dtos.EmployeeNameDto;
 import com.devbridge.learning.Apptasks.exceptions.EntityNotFoundException;
 import com.devbridge.learning.Apptasks.mappers.EmployeeMapper;
 import com.devbridge.learning.Apptasks.models.Employee;
+import com.devbridge.learning.Apptasks.models.ImageEmployee;
 import com.devbridge.learning.Apptasks.models.Role;
 import com.devbridge.learning.Apptasks.models.Team;
 import com.devbridge.learning.Apptasks.repositories.EmployeeRepository;
+import com.devbridge.learning.Apptasks.repositories.ImageEmployeeRepository;
 import com.devbridge.learning.Apptasks.repositories.RoleRepository;
 import com.devbridge.learning.Apptasks.repositories.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +26,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
     private final TeamRepository teamRepository;
+    private final ImageEmployeeRepository imageEmployeeRepository;
 
     public static final String EMPLOYEE_NOT_FOUND = "Employee by the given id not found";
     private static final String EMPLOYEE_ALREADY_IN_TEAM = "Employee is already a member of the team";
@@ -50,6 +52,47 @@ public class EmployeeService {
     public Set<EmployeeNameDto> getEmployeeNameDtosByIds(Set<UUID> ids) {
         Set<Employee> employees = employeeRepository.findByIds(ids);
         return EmployeeMapper.toNameDtoSet(employees);
+    }
+
+    public Set<EmployeeNameAndImageDto> getEmployeeNameAndImageDtosByIds(Set<UUID> ids) {
+        Set<Employee> employees = employeeRepository.findByIds(ids);
+
+        Set<UUID> imageIds = employees.stream()
+                .map(Employee::getImageId)
+                .filter(imageId -> imageId != null)
+                .collect(Collectors.toSet());
+
+        Set<ImageEmployee> imageEmployees = imageIds.isEmpty()
+                ? Set.of()
+                : imageEmployeeRepository.findByImageIds(imageIds);
+
+        return EmployeeMapper.toNameAndImageDtoSet(employees, imageEmployees);
+    }
+
+    public EmployeeNameAndImageDto getEmployeeNameAndImageDtoById(UUID employeeId) {
+        Employee existingEmployee = validateEmployeeId(employeeId);
+
+        Optional<ImageEmployee> imageOptional = imageEmployeeRepository.findByImageId(existingEmployee.getImageId());
+        ImageEmployee imageEmployee = imageOptional.orElse(null);
+
+        return EmployeeMapper.toNameAndImageDto(existingEmployee, imageEmployee);
+    }
+
+    public List<EmployeeNameAndImageDto> getEmployeeNameAndImageDtosAll() {
+        List<Employee> employees = employeeRepository.findAll();
+
+        List<ImageEmployee> imageEmployees = imageEmployeeRepository.findAll();
+
+        // map of images key-ed by imageId
+        Map<UUID, ImageEmployee> imageEmployeeMap = imageEmployees.stream()
+                .collect(Collectors.toMap(ImageEmployee::getImageId, imageEmployee -> imageEmployee));
+
+        return employees.stream()
+                .map(employee -> {
+                    ImageEmployee imageEmployee = imageEmployeeMap.get(employee.getImageId());
+                    return EmployeeMapper.toNameAndImageDto(employee, imageEmployee);
+                })
+                .collect(Collectors.toList());
     }
 
     public List<EmployeeDto> getEmployeesByTeamId (UUID teamId) {

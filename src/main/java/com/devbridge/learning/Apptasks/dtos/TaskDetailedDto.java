@@ -5,10 +5,9 @@ import lombok.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Builder
 public class TaskDetailedDto {
     private UUID taskId;
